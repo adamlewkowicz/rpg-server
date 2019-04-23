@@ -13,8 +13,8 @@ services:
     volumes:
       - './:/usr/src/app:ro'
       - /usr/src/app/node_modules
-  rgp-postgres:
-    container_name: rgp-postgres
+  rpg-postgres:
+    container_name: rpg-postgres
     image: postgres
     restart: always
     environment:

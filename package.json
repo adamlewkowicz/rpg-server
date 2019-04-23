@@ -26,7 +26,12 @@
   },
   "homepage": "https://github.com/alk831/rpg-server#readme",
   "dependencies": {
+    "express": "^4.16.4",
+    "pg": "^7.10.0",
+    "pg-hstore": "^2.3.2",
+    "reflect-metadata": "^0.1.13",
     "sequelize": "^5.7.4",
+    "sequelize-typescript": "^0.6.10",
     "socket.io": "^2.2.0",
     "typescript": "^3.4.5"
   },
