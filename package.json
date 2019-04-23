@@ -1,7 +1,7 @@
 {
   "name": "rpg-server",
   "version": "0.0.1",
-  "description": "",
+  "description": "MMORPG server written in Node.js using socket.io",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -22,5 +22,11 @@
   "bugs": {
     "url": "https://github.com/alk831/rpg-server/issues"
   },
-  "homepage": "https://github.com/alk831/rpg-server#readme"
+  "homepage": "https://github.com/alk831/rpg-server#readme",
+  "dependencies": {
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/socket.io": "^2.1.2"
+  }
 }
