@@ -4,7 +4,8 @@
   "description": "MMORPG server written in Node.js using socket.io",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon -L --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec ts-node index.ts",
+    "dev": "nodemon -L --watch './**/*.ts' --ignore './**/*.spec.ts' --ignore './node_modules' --exec ts-node index.ts",
+    "dev:watchall": "nodemon -L --ignore './**/*.spec.ts' --ignore './node_modules' --exec ts-node index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean:full": "docker-compose down & docker-compose up --build"
   },

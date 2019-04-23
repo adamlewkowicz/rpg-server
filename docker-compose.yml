@@ -1,7 +1,7 @@
 version: '2'
 services:
   rpg-server:
-    command: npm run dev
+    command: npm run dev:watchall
     container_name: rpg-server
     restart: on-failure:2
     build:
