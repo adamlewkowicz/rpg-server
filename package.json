@@ -4,7 +4,9 @@
   "description": "MMORPG server written in Node.js using socket.io",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon -L --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec ts-node index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean:full": "docker-compose down & docker-compose up --build"
   },
   "repository": {
     "type": "git",
@@ -24,9 +26,15 @@
   },
   "homepage": "https://github.com/alk831/rpg-server#readme",
   "dependencies": {
-    "socket.io": "^2.2.0"
+    "sequelize": "^5.7.4",
+    "socket.io": "^2.2.0",
+    "typescript": "^3.4.5"
   },
   "devDependencies": {
-    "@types/socket.io": "^2.1.2"
+    "@types/node": "^11.13.7",
+    "@types/sequelize": "^4.27.48",
+    "@types/socket.io": "^2.1.2",
+    "nodemon": "^1.18.11",
+    "ts-node": "^8.1.0"
   }
 }

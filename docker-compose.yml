@@ -1,0 +1,23 @@
+version: '2'
+services:
+  rpg-server:
+    command: npm run dev
+    container_name: rpg-server
+    restart: on-failure:2
+    build:
+      context: .
+      args:
+        - NODE_ENV=development
+    ports:
+      - 5000:5000
+    volumes:
+      - './:/usr/src/app:ro'
+      - /usr/src/app/node_modules
+  rgp-postgres:
+    container_name: rgp-postgres
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=pwd
+    ports:
+      - 5432:5432
