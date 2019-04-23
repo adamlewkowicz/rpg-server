@@ -2,28 +2,26 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 import { sequelize } from './src/db';
+import { Character } from './src/models/character';
+import gameController from './src/controllers/game';
 
 app.get('/', function(req: any, res: any){
   res.sendFile(__dirname + '/index.html');
 });
 
-sequelize.sync()
-  .then(() => {
-    console.log('synced')
+let force = false;
+// force = true;
+sequelize.sync({ force })
+  .then((): any => {
+    if (force) {
+      return Character.create({ name: 'Razuglag', leve: 31, online: false })
+    }
+    return Promise.resolve;
   })
+  .then(() => console.log('synced'))
   .catch(console.log)
 
-io.on('connection', function(socket: any){
-  console.log('user connected');
-
-  socket.on('in-game', function(characterId: any) {
-    console.log(characterId);
-  });
-
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
-});
+io.on('connection', (socket: any) => gameController(io, socket));
 
 
 

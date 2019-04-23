@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
-import { Player } from '../models/player';
+import { Character } from '../models/character';
 
 const sequelize = new Sequelize({
   dialect: 'postgres',
@@ -10,6 +10,6 @@ const sequelize = new Sequelize({
   // modelPaths: [__dirname + '/**/*.ts']
 });
 
-sequelize.addModels([Player]);
+sequelize.addModels([Character]);
 
 export { sequelize as sequelize };
