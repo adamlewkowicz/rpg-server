@@ -13,8 +13,8 @@ export class CharacterPosition extends Model<CharacterPosition> {
   /* Map */
   @ForeignKey(() => Map)
   @Column
-
   mapId!: number;
+  
   @BelongsTo(() => Map)
   map!: Map;
 

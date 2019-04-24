@@ -6,6 +6,7 @@ export class Character extends Model<Character> {
   @Column
   name!: string;
 
+  @Default(1)
   @Column(DataType.SMALLINT)
   level!: number;
   
