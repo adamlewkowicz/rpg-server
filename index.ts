@@ -4,7 +4,8 @@ var io = require('socket.io')(http);
 import { sequelize } from './src/db';
 import { Character } from './src/models/Character';
 import { Map } from './src/models/Map';
-import gameController from './src/controllers/game';
+import { CharacterPosition } from './src/models/CharacterPosition';
+// import gameController from './src/controllers/game';
 import mainController from './src/controllers/main';
 
 app.get('/', function(req: any, res: any){
@@ -12,14 +13,17 @@ app.get('/', function(req: any, res: any){
 });
 
 let force = false;
-force = true;
+// force = true;
 sequelize.sync({ force })
   .then((): any => {
     if (force) {
       return Promise.all([
-        Character.create({ name: 'Razuglag', leve: 31, online: false }),
+        Character.create({ name: 'Razuglag', level: 31, online: false }),
+        Character.create({ name: 'Roo', level: 12, online: false }),
         Map.create({ name: 'Torneg' }),
         Map.create({ name: 'Ithan' }),
+        CharacterPosition.create({ mapId: 1, charId: 1 }),
+        CharacterPosition.create({ mapId: 1, charId: 2 })
       ])
     }
     return Promise.resolve;
