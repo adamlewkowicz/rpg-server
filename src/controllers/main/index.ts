@@ -44,18 +44,17 @@ export default (io: any) => async (socket: any) => {
   let currentMapName = currentMap.name;
 
   const handleMapJoin = (mapName: string) => () => {
-    maps[mapName].players.push(character.id);
+    maps[mapName].players.push(position);
     console.log(`${mapName} online: (${maps[mapName].players.length})`);
   }
 
   const handleMapLeave = (mapName: string) => () => {
     const { players } = maps[mapName];
     maps[mapName].players = players
-      .filter((charId: number) => charId !== character.id);
+      .filter((char: any) => char.charId !== position.charId);
   }
 
   handleMapJoin('Ithan');
-
 
   socket.on('changeMap', (nextMapName: string) => {
     socket.leave(currentMapName, handleMapLeave(currentMapName));
@@ -63,6 +62,12 @@ export default (io: any) => async (socket: any) => {
     
     console.log(`${currentMapName} => ${nextMapName}`);
     currentMapName = nextMapName;
+    io.emit('PLAYERS', maps);
+  });
+
+  socket.on('playerMove', (key: string) => {
+
+    socket.to(currentMapName).emit('PLAYER_POSITION_CHANGE', character.id, 'X', 12);
   });
 
   socket.on('disconnect', () => {
