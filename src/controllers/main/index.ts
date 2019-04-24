@@ -38,6 +38,24 @@ async function initGame() {
   return { character, position, currentMap };
 }
 
+async function getCharsForLocationId (locationId: number) {
+  const sameLocationChars = await CharacterPosition
+  .findAll({
+    where: { mapId: locationId },
+    include: [
+      { model: Character }
+    ]
+  });
+
+  const normalizedChars = sameLocationChars
+    .map(char => {
+      const { character, ...rest } = char.toJSON();
+      return { ...character, ...rest };
+    });
+
+  return normalizedChars;
+}
+
 export default (io: any) => async (socket: any) => {
   clientId++;
   const { character, position, currentMap } = await initGame();
@@ -48,76 +66,34 @@ export default (io: any) => async (socket: any) => {
   
   let currentMapName = currentMap.name;
   const location = currentMap;
-  const characters: object[] = [];
-
-  const sameLocationChars = await CharacterPosition
-    .findAll({
-      where: { mapId: location.id },
-      include: [
-        { model: Character }
-      ]
-    });
-
-  const normalizedChars = sameLocationChars
-    .map(char => {
-      const { character, ...rest } = char.toJSON();
-      return { ...character, ...rest };
-    });
+  const characters = await getCharsForLocationId(location.id);
 
   const char = { ...character.toJSON(), ...position.toJSON() };
 
   setTimeout(() => {
     socket.emit('LOAD_GAME', {
       type: 'LOAD_GAME',
-      payload: { location, character: char, characters: normalizedChars },
-      meta: { io: false }
+      payload: { location, character: char, characters },
+      meta: { io: false, clientId }
     });
   }, 500);
 
 
-  const handleMapJoin = (mapName: string) => () => {
-    maps[mapName].players.push(position);
-    console.log(`${mapName} online: (${maps[mapName].players.length})`);
-  }
-
-  const handleMapLeave = (mapName: string) => () => {
-    const { players } = maps[mapName];
-    maps[mapName].players = players
-      .filter((char: any) => char.charId !== position.charId);
-  }
-
-  handleMapJoin('Ithan');
-
-  socket.on('changeMap', (nextMapName: string) => {
-    socket.leave(currentMapName, handleMapLeave(currentMapName));
-    socket.join(nextMapName, handleMapJoin(nextMapName));
-    
-    console.log(`${currentMapName} => ${nextMapName}`);
-    currentMapName = nextMapName;
-    io.emit('PLAYERS', maps);
-  });
 
   socket.on('REQUEST_LOCATION_CHANGE', async (action: any) => {
-    const location = await Map.findByPk(action.meta.locationId);
-    socket.emit('CHANGE_LOCATION', { payload: { location, characters: {} }});
+    const { locationId } = action.meta;
+    const location = await Map.findByPk(locationId);
+    const characters = await getCharsForLocationId(locationId);
+    socket.emit('CHANGE_LOCATION', { payload: { location, characters }});
   });
 
-  let charUpdates = 0;
 
   socket.on('CHARACTER_UPDATE', async (action: any) => {
-    if (charUpdates < 10) {
-      /* Third arg for stopping io propagation - equivalent for io: false */
-      socket.broadcast.emit('CHARACTER_UPDATE', {
-        ...action,
-        meta: { ...action.meta, io: false }
-      }, false);
-      charUpdates++;
-    }
-  });
-
-  socket.on('playerMove', (key: string) => {
-
-    socket.to(currentMapName).emit('PLAYER_POSITION_CHANGE', character.id, 'X', 12);
+    /* Third arg for stopping io propagation - equivalent for io: false */
+    socket.broadcast.emit('CHARACTER_UPDATE', {
+      ...action,
+      meta: { ...action.meta, io: false }
+    }, false);
   });
 
   socket.on('disconnect', () => {
