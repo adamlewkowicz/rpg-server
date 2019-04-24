@@ -7,43 +7,49 @@ const MAPS = {
 }
 
 export default async (io: any, socket: any) => {
-  let character: object|any;
   const currentMap = await Map.findOne({ where: { name: 'Torneg' }});
+  const character = await Character.findByPk(1);
   
   socket.on('in-game', async (characterId: number) => {
-    character = await Character.findByPk(characterId);
+    
   });
-
-
   
   socket.on('playerMove', async (key: string) => {
-    if (!currentMap) return;
+    if (!currentMap || !character) return;
+    let positionChanged: void | 'x' | 'y';
 
     switch(key) {
       case 'w':
         if (character.positionY > 0) {
           character.positionY--;
+          positionChanged = 'y';
         }
         break;
       case 'a':
         if (character.positionX > 0) {
           character.positionX--;
+          positionChanged = 'x';
         }
         break;
       case 's':
         if (character.positionY < currentMap.height) {
           character.positionY++;
+          positionChanged = 'y';
         }
         break;
       case 'd':
         if (character.positionX < currentMap.width) {
           character.positionX++;
+          positionChanged = 'x';
         }
         break;
       default: throw new Error(`Invalid key ${key}`);
     }
-    io.emit('character', character.toJSON());
-    await character.save();
+
+    if (positionChanged != null) {
+      io.emit('character', character.toJSON());
+      await character.save();
+    }
   });
   
 

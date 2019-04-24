@@ -27,6 +27,11 @@ sequelize.sync({ force })
 
 io.on('connection', (socket: any) => gameController(io, socket));
 
+/*
+const server1 = io
+  .of('/server1')
+  .on('connection', (socket: any) => gameController(server1, socket));
+*/
 
 
 http.listen(5000, function() {

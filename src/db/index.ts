@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { Character } from '../models/character';
 import { Map } from '../models/Map';
+import { CharacterPosition } from '../models/CharacterPosition';
 
 const sequelize = new Sequelize({
   dialect: 'postgres',
@@ -11,6 +12,6 @@ const sequelize = new Sequelize({
   // modelPaths: [__dirname + '/**/*.ts']
 });
 
-sequelize.addModels([Character, Map]);
+sequelize.addModels([Character, Map, CharacterPosition]);
 
 export { sequelize as sequelize };
