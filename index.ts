@@ -27,7 +27,7 @@ sequelize.sync({ force })
         CharacterPosition.create({ mapId: 1, charId: 1 }),
         CharacterPosition.create({ mapId: 1, charId: 2 }),
         CharacterPosition.create({ mapId: 1, charId: 3 }),
-        CharacterPosition.create({ mapId: 1, charId: 4 })
+        CharacterPosition.create({ mapId: 2, charId: 4 })
       ])
     }
     return Promise.resolve;

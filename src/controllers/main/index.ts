@@ -63,12 +63,13 @@ export default (io: any) => async (socket: any) => {
   if (!currentMap || !character || !position) {
     throw new Error('Server error');
   }
-  
+  let currentLocationId: number = currentMap.id;
   let currentMapName = currentMap.name;
   const location = currentMap;
   const characters = await getCharsForLocationId(location.id);
 
   const char = { ...character.toJSON(), ...position.toJSON() };
+  const charId: number = char.id;
 
   setTimeout(() => {
     socket.emit('LOAD_GAME', {
@@ -81,10 +82,32 @@ export default (io: any) => async (socket: any) => {
 
 
   socket.on('REQUEST_LOCATION_CHANGE', async (action: any) => {
-    const { locationId } = action.meta;
-    const location = await Map.findByPk(locationId);
-    const characters = await getCharsForLocationId(locationId);
-    socket.emit('CHANGE_LOCATION', { payload: { location, characters }});
+    const { meta: { prevLocationId, nextLocationId }} = action;
+    
+    // socket.to(`location_${prevLocationId}`).emit('CHARACTER_LEAVE', action, false);
+
+    socket.broadcast.emit('CHARACTER_LEAVE', {
+      type: 'CHARACTER_LEAVE',
+      payload: charId
+    }, false);
+    // socket.leave(`location_${nextLocationId}`);
+
+    const nextLocation = await Map.findByPk(nextLocationId);
+    const characters = await getCharsForLocationId(nextLocationId);
+
+    if (!nextLocation || !characters) {
+      throw new Error(`Location propably doesnt exists - 404 - REQUEST_LOCATION_CHANGE`);
+    }
+
+    // socket.join(`location_${nextLocationId}`);
+    socket.broadcast.emit('CHARACTER_JOIN', { type: 'CHARACTER_JOIN', payload: char }, false);
+
+    socket.emit('CHANGE_LOCATION', {
+      type: 'CHANGE_LOCATION',
+      payload: { location: nextLocation, characters }
+    }, false);
+
+    currentLocationId = nextLocation.id;
   });
 
 
