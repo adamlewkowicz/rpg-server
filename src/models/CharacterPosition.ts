@@ -1,15 +1,30 @@
-import { Table, Column, Model, DataType, Default, ForeignKey, CreatedAt, BelongsTo, HasMany } from 'sequelize-typescript';
-import { Character } from './character';
+import {
+  Table, Column, Model, DataType, Default, ForeignKey, CreatedAt,
+  BelongsTo, AllowNull, HasMany,
+} from 'sequelize-typescript';
+import { Character } from './Character';
 import { Map } from './Map'; 
 
-@Table
+@Table({
+  timestamps: false
+})
 export class CharacterPosition extends Model<CharacterPosition> {
 
-  // @HasMany(() => Character, 'id')
-  // characterId!: Character;
+  /* Map */
+  @ForeignKey(() => Map)
+  @Column
 
-  // @ForeignKey(() => Map)
-  // mapId!: number;
+  mapId!: number;
+  @BelongsTo(() => Map)
+  map!: Map;
+
+  /* Character */
+  @ForeignKey(() => Character)
+  @Column
+  charId!: number;
+
+  @BelongsTo(() => Character)
+  character!: Character;
 
   @Default(0)
   @Column(DataType.SMALLINT)
@@ -20,7 +35,8 @@ export class CharacterPosition extends Model<CharacterPosition> {
   positionY!: number;
 
   @CreatedAt
+  @Default(Date)
   @Column
-  createdAat!: Date;
+  createdAt!: Date;
 
 }

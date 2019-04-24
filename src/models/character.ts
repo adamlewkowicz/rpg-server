@@ -12,11 +12,4 @@ export class Character extends Model<Character> {
   @Column(DataType.BOOLEAN)
   online!: boolean;
 
-  @Default(0)
-  @Column(DataType.SMALLINT)
-  positionX!: number;
-
-  @Default(0)
-  @Column(DataType.SMALLINT)
-  positionY!: number;
 }

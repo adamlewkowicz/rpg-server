@@ -1,4 +1,4 @@
-import { Character } from '../../models/character';
+import { Character } from '../../models/Character';
 import { Map } from '../../models/Map';
 import handlePlayerMove from './player_move';
 

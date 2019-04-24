@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
-import { Character } from '../models/character';
+import { Character } from '../models/Character';
 import { Map } from '../models/Map';
 import { CharacterPosition } from '../models/CharacterPosition';
 
