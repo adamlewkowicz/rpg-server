@@ -7,6 +7,8 @@
 		Test
 		<button onclick="joinGame(1)">Emit</button>
 		<button onclick="logout()">Logout</button>
+		<button onclick="enterMap('Torneg')">Enter Torneg</button>
+		<button onclick="enterMap('Ithan')">Enter Ithan</button>
 
 		<script>
 			// (async () => {
@@ -21,6 +23,8 @@
 				}
 
 				const logout = () => socket.emit('logout');
+
+				const enterMap = (mapName) => socket.emit('changeMap', mapName);
 
 				document.body.addEventListener('keyup', (event) => {
 					const movementKeys = {

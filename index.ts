@@ -17,7 +17,8 @@ sequelize.sync({ force })
     if (force) {
       return Promise.all([
         Character.create({ name: 'Razuglag', leve: 31, online: false }),
-        Map.create({ name: 'Torneg' })
+        Map.create({ name: 'Torneg' }),
+        Map.create({ name: 'Ithan' }),
       ])
     }
     return Promise.resolve;
