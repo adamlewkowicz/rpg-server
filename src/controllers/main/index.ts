@@ -56,6 +56,20 @@ async function getCharsForLocationId (locationId: number) {
   return normalizedChars;
 }
 
+async function getDataForNextLocation(nextLocationId: number) {
+
+  const [nextLocation, characters] = await Promise.all([
+    Map.findByPk(nextLocationId),
+    getCharsForLocationId(nextLocationId)
+  ]);
+
+  if (!nextLocation || !characters) {
+    throw new Error(`Location probably doesnt exists - 404 - REQUEST_LOCATION_CHANGE`);
+  }
+
+  return { nextLocation, characters }
+}
+
 export default (io: any) => async (socket: any) => {
   clientId++;
   const { character, position, currentMap } = await initGame();
@@ -64,6 +78,7 @@ export default (io: any) => async (socket: any) => {
     throw new Error('Server error');
   }
   let currentLocationId: number = currentMap.id;
+  let currentLocationRoom: string = `location_${currentLocationId}`;
   let currentMapName = currentMap.name;
   const location = currentMap;
   const characters = await getCharsForLocationId(location.id);
@@ -77,30 +92,34 @@ export default (io: any) => async (socket: any) => {
       payload: { location, character: char, characters },
       meta: { io: false, clientId }
     });
+    socket.join(currentLocationRoom);
   }, 500);
 
 
 
   socket.on('REQUEST_LOCATION_CHANGE', async (action: any) => {
-    const { meta: { prevLocationId, nextLocationId }} = action;
-    
-    // socket.to(`location_${prevLocationId}`).emit('CHARACTER_LEAVE', action, false);
+    const nextLocationId = action.payload;
+    const nextLocationRoom = `location_${nextLocationId}`;
 
-    socket.broadcast.emit('CHARACTER_LEAVE', {
-      type: 'CHARACTER_LEAVE',
-      payload: charId
-    }, false);
-    // socket.leave(`location_${nextLocationId}`);
+    socket.broadcast
+      .to(currentLocationRoom)
+      .emit(
+        'CHARACTER_LEAVE',
+        { type: 'CHARACTER_LEAVE', payload: charId },
+        false
+      );
+    socket.leave(currentLocationRoom);
 
-    const nextLocation = await Map.findByPk(nextLocationId);
-    const characters = await getCharsForLocationId(nextLocationId);
+    const { nextLocation, characters } = await getDataForNextLocation(nextLocationId);
 
-    if (!nextLocation || !characters) {
-      throw new Error(`Location propably doesnt exists - 404 - REQUEST_LOCATION_CHANGE`);
-    }
-
-    // socket.join(`location_${nextLocationId}`);
-    socket.broadcast.emit('CHARACTER_JOIN', { type: 'CHARACTER_JOIN', payload: char }, false);
+    socket.join(nextLocationRoom);
+    socket.broadcast
+      .to(nextLocationRoom)
+      .emit(
+        'CHARACTER_JOIN',
+        { type: 'CHARACTER_JOIN', payload: char /* UNSAFE!! - get character from server's redux to make sure its position is correct */ },
+        false
+      );
 
     socket.emit('CHANGE_LOCATION', {
       type: 'CHANGE_LOCATION',
@@ -108,6 +127,7 @@ export default (io: any) => async (socket: any) => {
     }, false);
 
     currentLocationId = nextLocation.id;
+    currentLocationRoom = nextLocationRoom;
   });
 
 
