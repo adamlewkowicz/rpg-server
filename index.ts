@@ -5,6 +5,7 @@ import { sequelize } from './src/db';
 import { Character } from './src/models/character';
 import { Map } from './src/models/Map';
 import gameController from './src/controllers/game';
+import mainController from './src/controllers/main';
 
 app.get('/', function(req: any, res: any){
   res.sendFile(__dirname + '/index.html');
@@ -26,7 +27,7 @@ sequelize.sync({ force })
   .then(() => console.log('synced'))
   .catch(console.log)
 
-io.on('connection', (socket: any) => gameController(io, socket));
+io.on('connection', mainController(io));
 
 /*
 const server1 = io

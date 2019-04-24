@@ -4,11 +4,11 @@ import { Map } from '../models/Map';
 import { CharacterPosition } from '../models/CharacterPosition';
 
 const sequelize = new Sequelize({
-  dialect: 'postgres',
-  host: 'rpg-postgres',
-  database: 'postgres',
-  username: 'postgres',
-  password: 'pwd',
+  dialect: 'mysql',
+  host: 'rpg-mysql',
+  database: 'mmorpg',
+  username: 'root',
+  password: 'pwd'
   // modelPaths: [__dirname + '/**/*.ts']
 });
 
