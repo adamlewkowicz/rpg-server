@@ -50,10 +50,26 @@ export default (io: any) => async (socket: any) => {
   const location = currentMap;
   const characters: object[] = [];
 
+  const sameLocationChars = await CharacterPosition
+    .findAll({
+      where: { mapId: location.id },
+      include: [
+        { model: Character }
+      ]
+    });
+
+  const normalizedChars = sameLocationChars
+    .map(char => {
+      const { character, ...rest } = char.toJSON();
+      return { ...character, ...rest };
+    });
+
+  const char = { ...character.toJSON(), ...position.toJSON() };
+
   setTimeout(() => {
     socket.emit('LOAD_GAME', {
       type: 'LOAD_GAME',
-      payload: { location, character, characters },
+      payload: { location, character: char, characters: normalizedChars },
       meta: { io: false }
     });
   }, 500);
@@ -90,7 +106,11 @@ export default (io: any) => async (socket: any) => {
 
   socket.on('CHARACTER_UPDATE', async (action: any) => {
     if (charUpdates < 10) {
-      socket.broadcast.emit('CHARACTER_UPDATE', action);
+      /* Third arg for stopping io propagation - equivalent for io: false */
+      socket.broadcast.emit('CHARACTER_UPDATE', {
+        ...action,
+        meta: { ...action.meta, io: false }
+      }, false);
       charUpdates++;
     }
   });
