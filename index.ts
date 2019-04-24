@@ -20,10 +20,14 @@ sequelize.sync({ force })
       return Promise.all([
         Character.create({ name: 'Razuglag', level: 31, online: false }),
         Character.create({ name: 'Roo', level: 12, online: false }),
-        Map.create({ name: 'Torneg' }),
-        Map.create({ name: 'Ithan' }),
+        Character.create({ name: 'Booom', level: 12, online: false }),
+        Character.create({ name: 'Ratatatat', level: 12, online: false }),
+        Map.create({ name: 'Novigrad' }),
+        Map.create({ name: 'Yar' }),
         CharacterPosition.create({ mapId: 1, charId: 1 }),
-        CharacterPosition.create({ mapId: 1, charId: 2 })
+        CharacterPosition.create({ mapId: 1, charId: 2 }),
+        CharacterPosition.create({ mapId: 1, charId: 3 }),
+        CharacterPosition.create({ mapId: 1, charId: 4 })
       ])
     }
     return Promise.resolve;

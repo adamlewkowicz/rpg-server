@@ -25,6 +25,7 @@ const maps: any = {
 }
 
 async function initGame() {
+  console.log({ clientId });
   const character = await Character.findByPk(clientId);
   const position = await CharacterPosition.findOne({
     where: { charId: clientId },
@@ -40,7 +41,7 @@ async function initGame() {
 export default (io: any) => async (socket: any) => {
   clientId++;
   const { character, position, currentMap } = await initGame();
-  
+
   if (!currentMap || !character || !position) {
     throw new Error('Server error');
   }
@@ -49,10 +50,14 @@ export default (io: any) => async (socket: any) => {
   const location = currentMap;
   const characters: object[] = [];
 
-  socket.emit('LOAD_GAME', {
-    type: 'LOAD_GAME',
-    payload: { location, character, characters }
-  });
+  setTimeout(() => {
+    socket.emit('LOAD_GAME', {
+      type: 'LOAD_GAME',
+      payload: { location, character, characters },
+      meta: { io: false }
+    });
+  }, 500);
+
 
   const handleMapJoin = (mapName: string) => () => {
     maps[mapName].players.push(position);
