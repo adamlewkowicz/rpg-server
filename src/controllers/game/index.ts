@@ -26,10 +26,6 @@ export default async (io: any, socket: any) => {
     currentMapName = nextMapName;
   });
 
-  // socket.on('changeMap', () => )
-  
-  
-
 
 
   socket.on('disconnect', function(){

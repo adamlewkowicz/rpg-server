@@ -5,6 +5,7 @@ import { map } from 'bluebird';
 
 let characterId = 1;
 let onlinePlayers = 0;
+let clientId = 0;
 
 const Ithan: any = {
   players: []
@@ -24,9 +25,9 @@ const maps: any = {
 }
 
 async function initGame() {
-  const character = await Character.findByPk(characterId);
+  const character = await Character.findByPk(clientId);
   const position = await CharacterPosition.findOne({
-    where: { charId: characterId },
+    where: { charId: clientId },
     order: [['id', 'DESC']]
   });
   const currentMap = await Map.findByPk(1);
@@ -37,11 +38,21 @@ async function initGame() {
 }
 
 export default (io: any) => async (socket: any) => {
+  clientId++;
   const { character, position, currentMap } = await initGame();
+  
   if (!currentMap || !character || !position) {
     throw new Error('Server error');
   }
+  
   let currentMapName = currentMap.name;
+  const location = currentMap;
+  const characters: object[] = [];
+
+  socket.emit('LOAD_GAME', {
+    type: 'LOAD_GAME',
+    payload: { location, character, characters }
+  });
 
   const handleMapJoin = (mapName: string) => () => {
     maps[mapName].players.push(position);
@@ -65,6 +76,20 @@ export default (io: any) => async (socket: any) => {
     io.emit('PLAYERS', maps);
   });
 
+  socket.on('REQUEST_LOCATION_CHANGE', async (action: any) => {
+    const location = await Map.findByPk(action.meta.locationId);
+    socket.emit('CHANGE_LOCATION', { payload: { location, characters: {} }});
+  });
+
+  let charUpdates = 0;
+
+  socket.on('CHARACTER_UPDATE', async (action: any) => {
+    if (charUpdates < 10) {
+      socket.broadcast.emit('CHARACTER_UPDATE', action);
+      charUpdates++;
+    }
+  });
+
   socket.on('playerMove', (key: string) => {
 
     socket.to(currentMapName).emit('PLAYER_POSITION_CHANGE', character.id, 'X', 12);
@@ -73,5 +98,6 @@ export default (io: any) => async (socket: any) => {
   socket.on('disconnect', () => {
     onlinePlayers--;
     characterId--;
+    clientId--;
   });
 }
