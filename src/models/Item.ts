@@ -6,8 +6,8 @@ import {
 import { STORAGE_TYPES } from '../consts';
 import { Character } from './Character';
 
-const { INVENTORY, DEPOSIT } = STORAGE_TYPES;
-type ITEM_STORAGE = 'INVENTORY' | 'DEPOSIT';
+const { INVENTORY, DEPOSIT, GROUND } = STORAGE_TYPES;
+type ITEM_STORAGE = 'INVENTORY' | 'DEPOSIT' | 'GROUND';
 
 
 @Table({
@@ -29,10 +29,10 @@ export class ItemType extends Model<ItemType> {
 
 
 @Table({
-  tableName: 'items',
+  tableName: 'items_loot',
   timestamps: false
 })
-export class Item extends Model<Item> {
+export class ItemLoot extends Model<ItemLoot> {
 
   @ForeignKey(() => Character)
   @AllowNull(false)
@@ -59,42 +59,53 @@ export class Item extends Model<Item> {
 
 
 @Table({
-  tableName: 'character_items',
+  tableName: 'items_loot_location',
   indexes: [{
     unique: true,
-    fields: ['charId', 'itemId', 'position', 'storage']
+    fields: ['charId', 'lootId', 'position', 'storage']
   }]
 })
-export class CharacterItem extends Model<CharacterItem> {
+export class ItemLocation extends Model<ItemLocation> {
 
+  @BelongsTo(() => Character)
+  character!: Character;
   @ForeignKey(() => Character)
   @AllowNull(false)
   @Column
   charId!: number;
-  @BelongsTo(() => Character)
-  character!: Character;
 
-  @ForeignKey(() => Item)
+
+  @BelongsTo(() => ItemLoot)
+  item!: ItemLoot;
+  @ForeignKey(() => ItemLoot)
+  @AllowNull(false)
   @Column
-  itemId!: number;
-  @BelongsTo(() => Item)
-  item!: Item;
+  lootId!: number;
+
 
   @Default(INVENTORY)
   @AllowNull(false)
-  @Column(DataType.ENUM(INVENTORY, DEPOSIT))
+  @Column(DataType.ENUM(INVENTORY, DEPOSIT, GROUND))
   storage!: ITEM_STORAGE;
 
   @AllowNull(false)
   @Column
   position!: number;
 
+  static async getInventory (charId: number) {
+    const items = await this.findAll({
+      where: { charId, storage: INVENTORY },
+      attributes: ['id', 'position'],
+
+    });
+  }
+
 
   static async getFromInventory(charId: number) {
     const items = await this.findAll({
       where: { charId, storage: INVENTORY },
       attributes: ['id', 'position'],
-      include: [{ model: Item }]
+      include: [{ model: ItemLoot }]
     });
     return items.map(foundItem => {
       const { item, ...rest } = foundItem.toJSON();

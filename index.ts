@@ -4,7 +4,7 @@ var io = require('socket.io')(http);
 import { sequelize } from './src/db';
 import { Character } from './src/models/Character';
 import { Location } from './src/models/Location';
-import { Item, CharacterItem, ItemType } from './src/models/Item';
+import { ItemLoot, ItemLocation, ItemType } from './src/models/Item';
 import mainController from './src/controllers/main';
 
 app.get('/', function(req: any, res: any){
@@ -16,6 +16,7 @@ force = true;
 sequelize.sync({ force })
   .then(async (): Promise<any> => {
     if (force) {
+      await new Promise(r => setTimeout(r, 200));
       await Promise.all([
         Character.createWithLocation({ name: 'Razuglag' }),
         Character.createWithLocation({ name: 'Roo' }),
@@ -28,15 +29,15 @@ sequelize.sync({ force })
         ItemType.create({ name: 'Zireael' }),
       ])
       await Promise.all([
-        Item.create({ lootedBy: 1, typeId: 1 }),
-        Item.create({ lootedBy: 1, typeId: 2 }),
-        Item.create({ lootedBy: 2, typeId: 2 })
+        // Item.create({ lootedBy: 1, typeId: 1 }),
+        // Item.create({ lootedBy: 1, typeId: 2 }),
+        // Item.create({ lootedBy: 2, typeId: 2 })
       ])
       return Promise.all([
-        CharacterItem.create({ charId: 1, itemId: 1, position: 1 }),
-        CharacterItem.create({ charId: 1, itemId: 1, position: 2 }),
-        CharacterItem.create({ charId: 1, itemId: 2, position: 3 }),
-        CharacterItem.create({ charId: 2, itemId: 2, position: 1 })
+        // CharacterItem.create({ charId: 1, itemId: 1, position: 1 }),
+        // CharacterItem.create({ charId: 1, itemId: 1, position: 2 }),
+        // CharacterItem.create({ charId: 1, itemId: 2, position: 3 }),
+        // CharacterItem.create({ charId: 2, itemId: 2, position: 1 })
       ]);
     }
     return Promise.resolve;

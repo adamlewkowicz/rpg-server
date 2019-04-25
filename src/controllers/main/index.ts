@@ -1,7 +1,7 @@
 import { Character } from '../../models/Character';
 import { Location } from '../../models/Location';
 import { CharacterLocation } from '../../models/CharacterLocation';
-import { Item, CharacterItem } from '../../models/Item';
+import { ItemLoot as Item, ItemLocation } from '../../models/Item';
 
 let characterId = 1;
 let onlinePlayers = 0;
@@ -35,7 +35,7 @@ async function initGame() {
     order: [['id', 'DESC']]
   });
   const [inventory] = await Promise.all([
-    CharacterItem.getFromInventory(clientId)
+    ItemLocation.getFromInventory(clientId)
   ]);
   const currentMap = await Location.findByPk(1);
   characterId++;
