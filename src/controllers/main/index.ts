@@ -151,18 +151,27 @@ export default (io: any) => async (socket: any) => {
   }
 
   socket.on('SEND_MESSAGE', async (action: any) => {
-    const type = 'RECEIVE_MESSAGE';
+
+    const nextAction = {
+      ...action,
+      type: 'RECEIVE_MESSAGE',
+      payload: {
+        ...action.payload,
+        fromSocketId: socketId,
+        fromCharId: charId
+      }
+    }
 
     switch(action.payload.type) {
       case MESSAGE_TYPES.PRIVATE:
         io
           .to(action.payload.to)
-          .emit('RECEIVE_MESSAGE', { ...action, type });
+          .emit('RECEIVE_MESSAGE', nextAction);
         break;
       default:
         socket
           .to(currentLocationRoom)
-          .emit('RECEIVE_MESSAGE', { ...action, type });
+          .emit('RECEIVE_MESSAGE', nextAction);
     }
   });
 
