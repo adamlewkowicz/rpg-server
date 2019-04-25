@@ -1,6 +1,7 @@
 import {
   Table, Column, Model, DataType, Default, Unique,
   AllowNull, HasMany, ForeignKey, BelongsTo,
+  CreatedAt,
 } from 'sequelize-typescript';
 import { STORAGE_TYPES } from '../consts';
 import { Character } from './Character';
@@ -10,9 +11,9 @@ type ITEM_STORAGE = 'INVENTORY' | 'DEPOSIT';
 
 
 @Table({
-  tableName: 'items'
+  tableName: 'item_types'
 })
-export class Item extends Model<Item> {
+export class ItemType extends Model<ItemType> {
 
   @Unique
   @AllowNull(false)
@@ -22,6 +23,36 @@ export class Item extends Model<Item> {
   @Default(0)
   @Column
   damage!: number
+
+}
+
+
+
+@Table({
+  tableName: 'items',
+  timestamps: false
+})
+export class Item extends Model<Item> {
+
+  @ForeignKey(() => Character)
+  @AllowNull(false)
+  @Column
+  lootedBy!: number;
+  @BelongsTo(() => Character)
+  Character!: Character;
+
+  @ForeignKey(() => ItemType)
+  @AllowNull(false)
+  @Column
+  typeId!: number;
+  @BelongsTo(() => ItemType)
+  ItemType!: ItemType;
+
+  @CreatedAt
+  @AllowNull(false)
+  @Default(Date)
+  @Column
+  lootedAt!: Date;
 
 }
 
@@ -68,7 +99,13 @@ export class CharacterItem extends Model<CharacterItem> {
     return items.map(foundItem => {
       const { item, ...rest } = foundItem.toJSON();
       const { id: itemId, ...itemWithoutId } = item;
-      return { ...rest, itemId, ...itemWithoutId };
+
+      return {
+        ...item,
+        ...rest,
+        typeId: item.id,
+        genericId: item.id,
+      }
     });
   }
 }

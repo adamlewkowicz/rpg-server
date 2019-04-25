@@ -4,7 +4,7 @@ var io = require('socket.io')(http);
 import { sequelize } from './src/db';
 import { Character } from './src/models/Character';
 import { Location } from './src/models/Location';
-import { Item, CharacterItem } from './src/models/Item';
+import { Item, CharacterItem, ItemType } from './src/models/Item';
 import mainController from './src/controllers/main';
 
 app.get('/', function(req: any, res: any){
@@ -12,7 +12,7 @@ app.get('/', function(req: any, res: any){
 });
 
 let force = false;
-// force = true;
+force = true;
 sequelize.sync({ force })
   .then(async (): Promise<any> => {
     if (force) {
@@ -24,8 +24,13 @@ sequelize.sync({ force })
         Character.createWithLocation({ name: 'Ratatatat' }),
         Location.create({ name: 'Novigrad' }),
         Location.create({ name: 'Yar' }),
-        Item.create({ name: 'Weeper' }),
-        Item.create({ name: 'Zireael' }),
+        ItemType.create({ name: 'Weeper' }),
+        ItemType.create({ name: 'Zireael' }),
+      ])
+      await Promise.all([
+        Item.create({ lootedBy: 1, typeId: 1 }),
+        Item.create({ lootedBy: 1, typeId: 2 }),
+        Item.create({ lootedBy: 2, typeId: 2 })
       ])
       return Promise.all([
         CharacterItem.create({ charId: 1, itemId: 1, position: 1 }),
