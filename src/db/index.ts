@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Character } from '../models/Character';
 import { CharacterLocation } from '../models/CharacterLocation';
 import { Location } from '../models/Location';
+import { Item, CharacterItem } from '../models/Item';
 
 const sequelize = new Sequelize({
   dialect: 'mysql',
@@ -15,7 +16,9 @@ const sequelize = new Sequelize({
 sequelize.addModels([
   Character,
   Location,
-  CharacterLocation
+  CharacterLocation,
+  Item, 
+  CharacterItem
 ]);
 
 export { sequelize as sequelize };
