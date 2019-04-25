@@ -12,7 +12,7 @@ app.get('/', function(req: any, res: any){
 });
 
 let force = false;
-force = true;
+// force = true;
 sequelize.sync({ force })
   .then(async (): Promise<any> => {
     if (force) {

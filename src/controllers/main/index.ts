@@ -1,6 +1,7 @@
 import { Character } from '../../models/Character';
 import { Location } from '../../models/Location';
 import { CharacterLocation } from '../../models/CharacterLocation';
+import { Item, CharacterItem } from '../../models/Item';
 
 let characterId = 1;
 let onlinePlayers = 0;
@@ -27,16 +28,20 @@ const socketIds = new Map();
 
 async function initGame() {
   console.log({ clientId });
+
   const character = await Character.findByPk(clientId);
   const position = await CharacterLocation.findOne({
     where: { charId: clientId },
     order: [['id', 'DESC']]
   });
+  const [inventory] = await Promise.all([
+    CharacterItem.getFromInventory(clientId)
+  ]);
   const currentMap = await Location.findByPk(1);
   characterId++;
   onlinePlayers++;
 
-  return { character, position, currentMap };
+  return { character, position, currentMap, inventory };
 }
 
 async function getCharsForLocationId (locationId: number) {
@@ -73,7 +78,7 @@ async function getDataForNextLocation(nextLocationId: number) {
 
 export default (io: any) => async (socket: any) => {
   clientId++;
-  const { character, position, currentMap } = await initGame();
+  const { character, position, currentMap, inventory } = await initGame();
 
   if (!currentMap || !character || !position) {
     throw new Error('Server error');
@@ -92,7 +97,7 @@ export default (io: any) => async (socket: any) => {
   setTimeout(() => {
     socket.emit('LOAD_GAME', {
       type: 'LOAD_GAME',
-      payload: { location, character: char, characters },
+      payload: { location, character: char, characters, inventory },
       meta: { io: false, clientId, currentLocationRoom, socketId }
     });
     socket.join(currentLocationRoom);

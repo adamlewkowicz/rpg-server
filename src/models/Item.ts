@@ -58,4 +58,17 @@ export class CharacterItem extends Model<CharacterItem> {
   @Column
   position!: number;
 
+
+  static async getFromInventory(charId: number) {
+    const items = await this.findAll({
+      where: { charId, storage: INVENTORY },
+      attributes: ['id', 'position'],
+      include: [{ model: Item }]
+    });
+    return items.map(foundItem => {
+      const { item, ...rest } = foundItem.toJSON();
+      const { id: itemId, ...itemWithoutId } = item;
+      return { ...rest, itemId, ...itemWithoutId };
+    });
+  }
 }
