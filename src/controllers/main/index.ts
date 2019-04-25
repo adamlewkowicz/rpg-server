@@ -85,12 +85,13 @@ export default (io: any) => async (socket: any) => {
 
   const char = { ...character.toJSON(), ...position.toJSON() };
   const charId: number = char.id;
+  const socketId = socket.id;
 
   setTimeout(() => {
     socket.emit('LOAD_GAME', {
       type: 'LOAD_GAME',
       payload: { location, character: char, characters },
-      meta: { io: false, clientId }
+      meta: { io: false, clientId, currentLocationRoom, socketId }
     });
     socket.join(currentLocationRoom);
   }, 500);
@@ -137,6 +138,32 @@ export default (io: any) => async (socket: any) => {
       ...action,
       meta: { ...action.meta, io: false }
     }, false);
+  });
+
+  
+  /* Community */
+  const MESSAGE_TYPES = {
+    PRIVATE: 'PRIVATE',
+    GROUP: 'GROUP',
+    CLAN: 'CLAN',
+    LOCAL: 'LOCAL',
+    GLOBAL: 'GLOBAL'
+  }
+
+  socket.on('SEND_MESSAGE', async (action: any) => {
+    const type = 'RECEIVE_MESSAGE';
+
+    switch(action.payload.type) {
+      case MESSAGE_TYPES.PRIVATE:
+        io
+          .to(action.payload.to)
+          .emit('RECEIVE_MESSAGE', { ...action, type });
+        break;
+      default:
+        socket
+          .to(currentLocationRoom)
+          .emit('RECEIVE_MESSAGE', { ...action, type });
+    }
   });
 
   socket.on('disconnect', () => {
