@@ -1,7 +1,6 @@
 import { Character } from '../../models/Character';
-import { Map } from '../../models/Map';
+import { Map as Location } from '../../models/Map';
 import { CharacterPosition } from '../../models/CharacterPosition';
-import { map } from 'bluebird';
 
 let characterId = 1;
 let onlinePlayers = 0;
@@ -24,6 +23,8 @@ const maps: any = {
   }
 }
 
+const socketIds = new Map();
+
 async function initGame() {
   console.log({ clientId });
   const character = await Character.findByPk(clientId);
@@ -31,7 +32,7 @@ async function initGame() {
     where: { charId: clientId },
     order: [['id', 'DESC']]
   });
-  const currentMap = await Map.findByPk(1);
+  const currentMap = await Location.findByPk(1);
   characterId++;
   onlinePlayers++;
 
@@ -59,7 +60,7 @@ async function getCharsForLocationId (locationId: number) {
 async function getDataForNextLocation(nextLocationId: number) {
 
   const [nextLocation, characters] = await Promise.all([
-    Map.findByPk(nextLocationId),
+    Location.findByPk(nextLocationId),
     getCharsForLocationId(nextLocationId)
   ]);
 
@@ -86,6 +87,7 @@ export default (io: any) => async (socket: any) => {
   const char = { ...character.toJSON(), ...position.toJSON() };
   const charId: number = char.id;
   const socketId = socket.id;
+  socketIds.set(charId, socketId);
 
   setTimeout(() => {
     socket.emit('LOAD_GAME', {
@@ -179,5 +181,6 @@ export default (io: any) => async (socket: any) => {
     onlinePlayers--;
     characterId--;
     clientId--;
+    socketIds.delete(charId);
   });
 }
