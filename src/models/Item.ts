@@ -46,7 +46,7 @@ export class ItemLoot extends Model<ItemLoot> {
   @Column
   typeId!: number;
   @BelongsTo(() => ItemType)
-  ItemType!: ItemType;
+  type!: ItemType;
 
   @CreatedAt
   @AllowNull(false)
@@ -93,10 +93,14 @@ export class ItemLocation extends Model<ItemLocation> {
   position!: number;
 
   static async getInventory (charId: number) {
-    const items = await this.findAll({
+    const foundItems = await this.findAll({
       where: { charId, storage: INVENTORY },
       attributes: ['id', 'position'],
-
+      include: [{ model: ItemLoot, include: [{ model: ItemType }] }]
+    });
+    return foundItems.map(foundItem => {
+      const { } = foundItem.toJSON();
+      console.log(foundItem.toJSON());
     });
   }
 
