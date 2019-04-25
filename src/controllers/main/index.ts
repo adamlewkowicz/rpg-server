@@ -202,6 +202,33 @@ export default (io: any) => async (socket: any) => {
     }
   });
 
+  
+
+  /* Items */
+
+  socket.on('ITEM_DROP', async (action: any) => {
+    const $_ITEM_DROPPED_ADD = '$_ITEM_DROPPED_ADD';
+
+    socket
+      .to(currentLocationRoom)
+      .emit($_ITEM_DROPPED_ADD, {
+        ...action,
+        type: $_ITEM_DROPPED_ADD,
+      });
+  });
+
+  socket.on('ITEM_PICKUP', async (action: any) => {
+    const $_ITEM_DROPPED_REMOVE = '$_ITEM_DROPPED_REMOVE';
+
+    socket
+      .to(currentLocationRoom)
+      .emit($_ITEM_DROPPED_REMOVE, {
+        ...action,
+        type: $_ITEM_DROPPED_REMOVE
+      });
+  });
+
+
   console.log(socketIds);
 
   socket.on('disconnect', () => {
