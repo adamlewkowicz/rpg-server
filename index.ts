@@ -3,9 +3,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 import { sequelize } from './src/db';
 import { Character } from './src/models/Character';
-import { Map } from './src/models/Map';
-import { CharacterPosition } from './src/models/CharacterPosition';
-// import gameController from './src/controllers/game';
+import { Location } from './src/models/Location';
 import mainController from './src/controllers/main';
 
 app.get('/', function(req: any, res: any){
@@ -13,22 +11,19 @@ app.get('/', function(req: any, res: any){
 });
 
 let force = false;
-// force = true;
+force = true;
 sequelize.sync({ force })
   .then((): any => {
     if (force) {
       return Promise.all([
-        Character.create({ name: 'Razuglag', level: 31, online: false }),
-        Character.create({ name: 'Roo', level: 12, online: false }),
-        Character.create({ name: 'Booom', level: 12, online: false }),
-        Character.create({ name: 'Ratatatat', level: 12, online: false }),
-        Map.create({ name: 'Novigrad' }),
-        Map.create({ name: 'Yar' }),
-        CharacterPosition.create({ mapId: 1, charId: 1 }),
-        CharacterPosition.create({ mapId: 1, charId: 2 }),
-        CharacterPosition.create({ mapId: 1, charId: 3 }),
-        CharacterPosition.create({ mapId: 2, charId: 4 })
-      ])
+        Character.createWithLocation({ name: 'Razuglag' }),
+        Character.createWithLocation({ name: 'Roo' }),
+        Character.createWithLocation({ name: 'Booom', locationId: 2 }),
+        Character.createWithLocation({ name: 'Test', locationId: 2 }),
+        Character.createWithLocation({ name: 'Ratatatat' }),
+        Location.create({ name: 'Novigrad' }),
+        Location.create({ name: 'Yar' })
+      ]);
     }
     return Promise.resolve;
   })

@@ -1,7 +1,9 @@
 import { Table, Column, Model, DataType, Default, HasMany } from 'sequelize-typescript';
 
-@Table
-export class Map extends Model<Map> {
+@Table({
+  tableName: 'locations'
+})
+export class Location extends Model<Location> {
 
   @Column
   name!: string;

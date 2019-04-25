@@ -1,6 +1,6 @@
 import { Character } from '../../models/Character';
-import { Map as Location } from '../../models/Map';
-import { CharacterPosition } from '../../models/CharacterPosition';
+import { Location } from '../../models/Location';
+import { CharacterLocation } from '../../models/CharacterLocation';
 
 let characterId = 1;
 let onlinePlayers = 0;
@@ -28,7 +28,7 @@ const socketIds = new Map();
 async function initGame() {
   console.log({ clientId });
   const character = await Character.findByPk(clientId);
-  const position = await CharacterPosition.findOne({
+  const position = await CharacterLocation.findOne({
     where: { charId: clientId },
     order: [['id', 'DESC']]
   });
@@ -40,9 +40,9 @@ async function initGame() {
 }
 
 async function getCharsForLocationId (locationId: number) {
-  const sameLocationChars = await CharacterPosition
+  const sameLocationChars = await CharacterLocation
   .findAll({
-    where: { mapId: locationId },
+    where: { locationId },
     include: [
       { model: Character }
     ]

@@ -3,26 +3,25 @@ import {
   BelongsTo, AllowNull, HasMany,
 } from 'sequelize-typescript';
 import { Character } from './Character';
-import { Map } from './Map'; 
+import { Location } from './Location'; 
 
 @Table({
+  tableName: 'character_location',
   timestamps: false
 })
-export class CharacterPosition extends Model<CharacterPosition> {
+export class CharacterLocation extends Model<CharacterLocation> {
 
-  /* Map */
-  @ForeignKey(() => Map)
+  /* Location */
+  @ForeignKey(() => Location)
   @Column
-  mapId!: number;
-  
-  @BelongsTo(() => Map)
-  map!: Map;
+  locationId!: number;
+  @BelongsTo(() => Location)
+  location!: Location;
 
   /* Character */
   @ForeignKey(() => Character)
   @Column
   charId!: number;
-
   @BelongsTo(() => Character)
   character!: Character;
 
@@ -37,6 +36,6 @@ export class CharacterPosition extends Model<CharacterPosition> {
   @CreatedAt
   @Default(Date)
   @Column
-  createdAt!: Date;
+  date!: Date;
 
 }

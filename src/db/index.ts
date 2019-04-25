@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { Character } from '../models/Character';
-import { Map } from '../models/Map';
-import { CharacterPosition } from '../models/CharacterPosition';
+import { CharacterLocation } from '../models/CharacterLocation';
+import { Location } from '../models/Location';
 
 const sequelize = new Sequelize({
   dialect: 'mysql',
@@ -12,6 +12,10 @@ const sequelize = new Sequelize({
   // modelPaths: [__dirname + '/**/*.ts']
 });
 
-sequelize.addModels([Character, Map, CharacterPosition]);
+sequelize.addModels([
+  Character,
+  Location,
+  CharacterLocation
+]);
 
 export { sequelize as sequelize };
