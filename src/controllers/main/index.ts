@@ -153,6 +153,7 @@ export default (io: any) => async (socket: any) => {
   }
 
   socket.on('SEND_MESSAGE', async (action: any) => {
+    const { PRIVATE, GROUP, LOCAL } = MESSAGE_TYPES;
 
     const nextAction = {
       ...action,
@@ -164,18 +165,39 @@ export default (io: any) => async (socket: any) => {
       }
     }
 
+
     switch(action.payload.type) {
-      case MESSAGE_TYPES.PRIVATE:
+
+      case PRIVATE:
+        const receiverSocketId = socketIds.get(Number(action.payload.to));
+
+        if (!receiverSocketId) {
+          throw new Error(`Socket with id ${receiverSocketId} doesn't exists`);
+        }
+
         io
-          .to(action.payload.to)
+          .to(receiverSocketId)
           .emit('RECEIVE_MESSAGE', nextAction);
         break;
-      default:
+
+      case GROUP:
+        const groupRoom = `group_${action.payload.to}`;
+        socket
+          .to(groupRoom)
+          .emit('RECEIVE_MESSAGE', nextAction);
+        break;
+
+      case LOCAL:
         socket
           .to(currentLocationRoom)
           .emit('RECEIVE_MESSAGE', nextAction);
+        break;
+
+      default: throw new Error(`Invalid message type ${action.payload.type}`);
     }
   });
+
+  console.log(socketIds);
 
   socket.on('disconnect', () => {
     onlinePlayers--;
