@@ -35,7 +35,7 @@ async function initGame() {
     order: [['id', 'DESC']]
   });
   const [inventory] = await Promise.all([
-    ItemLocation.getFromInventory(clientId)
+    ItemLocation.getInventory(clientId)
   ]);
   const currentMap = await Location.findByPk(1);
   characterId++;

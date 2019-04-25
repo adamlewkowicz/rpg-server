@@ -76,7 +76,7 @@ export class ItemLocation extends Model<ItemLocation> {
 
 
   @BelongsTo(() => ItemLoot)
-  item!: ItemLoot;
+  loot!: ItemLoot;
   @ForeignKey(() => ItemLoot)
   @AllowNull(false)
   @Column
@@ -96,31 +96,15 @@ export class ItemLocation extends Model<ItemLocation> {
     const foundItems = await this.findAll({
       where: { charId, storage: INVENTORY },
       attributes: ['id', 'position'],
-      include: [{ model: ItemLoot, include: [{ model: ItemType }] }]
+      include: [{
+        model: ItemLoot,
+        attributes: { exclude: ['typeId'] },
+        include: [{ model: ItemType }]
+      }]
     });
     return foundItems.map(foundItem => {
-      const { } = foundItem.toJSON();
-      console.log(foundItem.toJSON());
-    });
-  }
-
-
-  static async getFromInventory(charId: number) {
-    const items = await this.findAll({
-      where: { charId, storage: INVENTORY },
-      attributes: ['id', 'position'],
-      include: [{ model: ItemLoot }]
-    });
-    return items.map(foundItem => {
-      const { item, ...rest } = foundItem.toJSON();
-      const { id: itemId, ...itemWithoutId } = item;
-
-      return {
-        ...item,
-        ...rest,
-        typeId: item.id,
-        genericId: item.id,
-      }
+      const { loot: { type, ...loot }, ...item } = foundItem.toJSON();
+      return { ...item, loot, type };
     });
   }
 }
