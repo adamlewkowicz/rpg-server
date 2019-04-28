@@ -95,8 +95,8 @@ export default (io: any) => async (socket: any) => {
   socketIds.set(charId, socketId);
 
   setTimeout(() => {
-    socket.emit('LOAD_GAME', {
-      type: 'LOAD_GAME',
+    socket.emit('$_LOAD_GAME', {
+      type: '$_LOAD_GAME',
       payload: { location, character: char, characters, inventory },
       meta: { io: false, clientId, currentLocationRoom, socketId }
     });
@@ -141,10 +141,11 @@ export default (io: any) => async (socket: any) => {
 
   socket.on('CHARACTER_UPDATE', async (action: any) => {
     /* Third arg for stopping io propagation - equivalent for io: false */
-    socket.broadcast.emit('CHARACTER_UPDATE', {
+    socket.broadcast.emit('$_CHARACTER_UPDATE', {
       ...action,
-      meta: { ...action.meta, io: false }
-    }, false);
+      type: '$_CHARACTER_UPDATE',
+      meta: { ...action.meta },
+    });
   });
 
   
