@@ -13,14 +13,14 @@ services:
     volumes:
       - './:/usr/src/app:ro'
       - /usr/src/app/node_modules
-  rpg-postgres:
-    container_name: rpg-postgres
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_PASSWORD=pwd
-    ports:
-      - 5432:5432
+  # rpg-postgres:
+  #   container_name: rpg-postgres
+  #   image: postgres
+  #   restart: always
+  #   environment:
+  #     - POSTGRES_PASSWORD=pwd
+  #   ports:
+  #     - 5432:5432
   rpg-mysql:
     container_name: rpg-mysql
     image: mysql:8.0.15

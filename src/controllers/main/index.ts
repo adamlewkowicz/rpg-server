@@ -3,6 +3,8 @@ import { Location } from '../../models/Location';
 import { CharacterLocation } from '../../models/CharacterLocation';
 import { ItemLoot as Item, ItemLocation } from '../../models/Item';
 
+import battleController from '../battle';
+
 let characterId = 1;
 let onlinePlayers = 0;
 let clientId = 0;
@@ -229,6 +231,7 @@ export default (io: any) => async (socket: any) => {
       });
   });
 
+  battleController(io, socket, character);
 
   console.log(socketIds);
 
