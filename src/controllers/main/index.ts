@@ -2,6 +2,7 @@ import { Character } from '../../models/Character';
 import { Location } from '../../models/Location';
 import { CharacterLocation } from '../../models/CharacterLocation';
 import { ItemLoot as Item, ItemLocation } from '../../models/Item';
+import { Op } from 'sequelize';
 
 import battleController from '../battle';
 
@@ -46,7 +47,7 @@ async function initGame() {
   return { character, position, currentMap, inventory };
 }
 
-async function getCharsForLocationId (locationId: number) {
+async function getCharsForLocationId (locationId: number, charId: number) {
   const sameLocationChars = await CharacterLocation
   .findAll({
     where: { locationId },
@@ -59,16 +60,17 @@ async function getCharsForLocationId (locationId: number) {
     .map(char => {
       const { character, ...rest } = char.toJSON();
       return { ...character, ...rest };
-    });
+    })
+    .filter(char => char.id != charId);
 
   return normalizedChars;
 }
 
-async function getDataForNextLocation(nextLocationId: number) {
+async function getDataForNextLocation(nextLocationId: number, charId: number) {
 
   const [nextLocation, characters] = await Promise.all([
     Location.findByPk(nextLocationId),
-    getCharsForLocationId(nextLocationId)
+    getCharsForLocationId(nextLocationId, charId)
   ]);
 
   if (!nextLocation || !characters) {
@@ -89,10 +91,10 @@ export default (io: any) => async (socket: any) => {
   let currentLocationRoom: string = `location_${currentLocationId}`;
   let currentMapName = currentMap.name;
   const location = currentMap;
-  const characters = await getCharsForLocationId(location.id);
-
   const char = { ...character.toJSON(), ...position.toJSON() };
   const charId: number = char.id;
+  const characters = await getCharsForLocationId(location.id, charId);
+
   const socketId = socket.id;
   socketIds.set(charId, socketId);
 
@@ -120,7 +122,7 @@ export default (io: any) => async (socket: any) => {
       );
     socket.leave(currentLocationRoom);
 
-    const { nextLocation, characters } = await getDataForNextLocation(nextLocationId);
+    const { nextLocation, characters } = await getDataForNextLocation(nextLocationId, charId);
 
     socket.join(nextLocationRoom);
     socket.broadcast
