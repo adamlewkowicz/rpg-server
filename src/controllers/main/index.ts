@@ -144,7 +144,7 @@ export default (io: any) => async (socket: any) => {
     socket.broadcast.emit('$_CHARACTER_UPDATE', {
       ...action,
       type: '$_CHARACTER_UPDATE',
-      meta: { ...action.meta },
+      meta: { ...action.meta, charId },
     });
   });
 
