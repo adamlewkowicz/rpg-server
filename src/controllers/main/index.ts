@@ -101,7 +101,18 @@ export default (io: any) => async (socket: any) => {
   setTimeout(() => {
     socket.emit('$_LOAD_GAME', {
       type: '$_LOAD_GAME',
-      payload: { location, character: char, characters, inventory },
+      payload: {
+        location,
+        character: char,
+        characters,
+        inventory,
+        collisions: [
+          [0, 1, 1, 1, 0],
+          [0, 1, 0, 0, 0]
+        ],
+        mobs: [],
+        npcs: []
+      },
       meta: { io: false, clientId, currentLocationRoom, socketId }
     });
     socket.join(currentLocationRoom);
