@@ -107,11 +107,29 @@ export default (io: any) => async (socket: any) => {
         characters,
         inventory,
         collisions: [
-          [0, 1, 1, 1, 0],
-          [0, 1, 0, 0, 0]
+          [0, 1, 1, 1, 0, 1, 0],
+          [1, 0, 0, 0, 1, 1, 1],
+          [1, 1, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [1, 1, 0, 0, 0, 0, 0],
+          [1, 0, 0, 0, 0, 0, 0]
         ],
-        mobs: [],
-        npcs: []
+        mobs: [{
+          id: 1,
+          name: 'Eagle',
+          level: 12,
+          status: 'IDLE',
+          x: 3,
+          y: 5,
+          type: { id: 1, damage: 12 }
+        }],
+        npcs: [{
+          id: 1,
+          name: 'Anubis',
+          x: 2,
+          y: 6,
+          img: null
+        }]
       },
       meta: { io: false, clientId, currentLocationRoom, socketId }
     });
