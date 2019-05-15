@@ -16,14 +16,12 @@ const dialogMock = {
 }
 
 export default async (io: any, socket: any, character: any) => {
-  socket.on('QUEST_DIALOG_TOGGLE', (action: any, dispatch: any) => {
-    const { respondWith: type } = action.meta;
+  socket.on('NPC_DIALOG_REQUEST', (action: any, dispatch: any) => {
 
-    const nextAction = {
-      type,
+    dispatch({
+      type: '$_NPC_DIALOG_RESPONSE',
       payload: dialogMock
-    }
+    });
     
-    dispatch(type, nextAction);
   });
 }
