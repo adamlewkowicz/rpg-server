@@ -13,6 +13,7 @@ services:
     volumes:
       - './:/usr/src/app:ro'
       - /usr/src/app/node_modules
+      - './node_modules/rpg-shared:/usr/src/app/node_modules/rpg-shared'
   # rpg-postgres:
   #   container_name: rpg-postgres
   #   image: postgres

@@ -1,3 +1,8 @@
+import {
+  NpcDialogOpen, NpcDialogResponse,
+  
+  NPC_DIALOG_REQUEST, $_NPC_DIALOG_RESPONSE
+} from 'rpg-shared/action-types';
 
 const dialogMock = {
   id: 1,
@@ -15,13 +20,12 @@ const dialogMock = {
   ]
 }
 
-export default async (io: any, socket: any, character: any) => {
-  socket.on('NPC_DIALOG_REQUEST', (action: any, dispatch: any) => {
 
+export default async (io: any, socket: any, character: any) => {
+  socket.on(NPC_DIALOG_REQUEST, (action: NpcDialogOpen, dispatch: any) => {
     dispatch({
-      type: '$_NPC_DIALOG_RESPONSE',
+      type: $_NPC_DIALOG_RESPONSE,
       payload: dialogMock
     });
-    
   });
 }
