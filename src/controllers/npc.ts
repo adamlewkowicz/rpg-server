@@ -1,8 +1,14 @@
 import {
-  NpcDialogOpen, NpcDialogResponse,
-  
-  NPC_DIALOG_REQUEST, $_NPC_DIALOG_RESPONSE
+  NpcDialogOpen,
+  NpcDialogResponse,
+  NpcShopTrade,
 } from 'rpg-shared/action-types';
+import {
+  NPC_DIALOG_REQUEST, $_NPC_DIALOG_RESPONSE,
+  NPC_SHOP_REQUEST, $_NPC_SHOP_RESPONSE,
+  NPC_SHOP_TRADE
+} from 'rpg-shared/dist/consts';
+// import { Item } from 'rpg-shared/objects';
 
 const dialogMock = {
   id: 1,
@@ -20,12 +26,30 @@ const dialogMock = {
   ]
 }
 
+const shopMock = {
+  items: [
+    {  }
+  ]
+}
+
 
 export default async (io: any, socket: any, character: any) => {
+
   socket.on(NPC_DIALOG_REQUEST, (action: NpcDialogOpen, dispatch: any) => {
     dispatch({
       type: $_NPC_DIALOG_RESPONSE,
       payload: dialogMock
+    });
+
+    socket.on(NPC_SHOP_REQUEST, (action: any, dispatch: any) => {
+      dispatch({
+        type: $_NPC_SHOP_RESPONSE,
+        payload: shopMock
+      });
+
+      socket.on(NPC_SHOP_TRADE, (action: NpcShopTrade, dispatch: any) => {
+        /* Remove and add items to inventory */
+      });
     });
   });
 }
