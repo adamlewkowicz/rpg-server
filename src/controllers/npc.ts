@@ -42,34 +42,33 @@ const shopMock = {
 
 export default async (io: any, socket: any, character: any) => {
 
-  socket.on(NPC_DIALOG_REQUEST, (action: Actions.NpcDialogRequest, dispatch: Dispatch) => {
-
-    socket.on(NPC_SHOP_REQUEST, (
-      action: Actions.NpcShopRequest,
-      dispatch: Dispatch<Actions.$NpcShopResponse>
-    ) => {
-
-      dispatch({
-        type: $_NPC_SHOP_RESPONSE,
-        payload: shopMock
-      });
-    });
-
-
-    socket.on(NPC_SHOP_TRADE, async (
-      action: Actions.NpcShopTrade,
-      dispatch: Dispatch<Actions.$NpcShopTrade>
-    ) => {
-      /* Remove and add items to inventory */
-      dispatch({
-        type: $_NPC_SHOP_TRADE
-      });
-    });
-
-    
+  socket.on(NPC_DIALOG_REQUEST, (action: Actions.NpcDialogRequest, dispatch: Dispatch) => {    
     dispatch({
       type: $_NPC_DIALOG_RESPONSE,
       payload: dialogMock
+    });
+  });
+
+
+  socket.on(NPC_SHOP_TRADE, async (
+    action: Actions.NpcShopTrade,
+    dispatch: Dispatch<Actions.$NpcShopTrade>
+  ) => {
+    /* Remove and add items to inventory */
+    dispatch({
+      type: $_NPC_SHOP_TRADE
+    });
+  });
+
+  
+  socket.on(NPC_SHOP_REQUEST, (
+    action: Actions.NpcShopRequest,
+    dispatch: Dispatch<Actions.$NpcShopResponse>
+  ) => {
+
+    dispatch({
+      type: $_NPC_SHOP_RESPONSE,
+      payload: shopMock
     });
   });
 }
