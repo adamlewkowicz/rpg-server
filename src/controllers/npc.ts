@@ -1,9 +1,10 @@
 import {
   NPC_DIALOG_REQUEST, $_NPC_DIALOG_RESPONSE,
   NPC_SHOP_REQUEST, $_NPC_SHOP_RESPONSE,
-  NPC_SHOP_TRADE
+  NPC_SHOP_TRADE, $_NPC_SHOP_TRADE
 } from 'rpg-shared/dist/consts';
 import * as Actions from 'rpg-shared/action-types/index';
+import { Dispatch } from 'redux';
 // import { Item } from 'rpg-shared/objects';
 
 const dialogMock = {
@@ -24,32 +25,51 @@ const dialogMock = {
 
 const shopMock = {
   items: [
-    {  }
+    {
+      id: 1,
+      type: {
+        id: 1,
+        name: 'Sword',
+        img: ''
+      },
+      price: 314,
+      lvl: 12,
+      damage: 41
+    }
   ]
 }
 
 
 export default async (io: any, socket: any, character: any) => {
 
-  socket.on(NPC_DIALOG_REQUEST, (action: Actions.NpcDialogRequest, dispatch: any) => {
+  socket.on(NPC_DIALOG_REQUEST, (action: Actions.NpcDialogRequest, dispatch: Dispatch) => {
 
-    socket.on(NPC_SHOP_REQUEST, (action: Actions.NpcShopRequest, dispatch: any) => {
-
-      socket.on(NPC_SHOP_TRADE, (action: Actions.NpcShopTrade, dispatch: any) => {
-        /* Remove and add items to inventory */
-      });
+    socket.on(NPC_SHOP_REQUEST, (
+      action: Actions.NpcShopRequest,
+      dispatch: Dispatch<Actions.$NpcShopResponse>
+    ) => {
 
       dispatch({
         type: $_NPC_SHOP_RESPONSE,
         payload: shopMock
       });
-
     });
 
+
+    socket.on(NPC_SHOP_TRADE, async (
+      action: Actions.NpcShopTrade,
+      dispatch: Dispatch<Actions.$NpcShopTrade>
+    ) => {
+      /* Remove and add items to inventory */
+      dispatch({
+        type: $_NPC_SHOP_TRADE
+      });
+    });
+
+    
     dispatch({
       type: $_NPC_DIALOG_RESPONSE,
       payload: dialogMock
     });
-    
   });
 }
