@@ -1,10 +1,11 @@
 import {
   NPC_DIALOG_REQUEST, $_NPC_DIALOG_RESPONSE,
   NPC_SHOP_REQUEST, $_NPC_SHOP_RESPONSE,
-  NPC_SHOP_TRADE, $_NPC_SHOP_TRADE
+  NPC_SHOP_TRADE, $_NPC_SHOP_TRADE, SYSTEM_ERROR
 } from 'rpg-shared/dist/consts';
 import * as Actions from 'rpg-shared/action-types/index';
 import { Dispatch } from 'redux';
+import { Socket } from 'socket.io'
 // import { Item } from 'rpg-shared/objects';
 
 const dialogMock = {
@@ -40,7 +41,7 @@ const shopMock = {
 }
 
 
-export default async (io: any, socket: any, character: any) => {
+export default async (io: any, socket: Socket, character: any) => {
 
   socket.on(NPC_DIALOG_REQUEST, (action: Actions.NpcDialogRequest, dispatch: Dispatch) => {    
     dispatch({
@@ -60,11 +61,19 @@ export default async (io: any, socket: any, character: any) => {
     });
   });
 
-  
+
   socket.on(NPC_SHOP_REQUEST, (
     action: Actions.NpcShopRequest,
     dispatch: Dispatch<Actions.$NpcShopResponse>
   ) => {
+
+    socket.broadcast.emit(SYSTEM_ERROR, {
+      type: SYSTEM_ERROR,
+      payload: 4,
+      error: {
+        fatal: false
+      }
+    } as Actions.$SystemError);
 
     dispatch({
       type: $_NPC_SHOP_RESPONSE,
