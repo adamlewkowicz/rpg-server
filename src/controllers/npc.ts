@@ -6,6 +6,7 @@ import {
 import * as Actions from 'rpg-shared/action-types/index';
 import { Dispatch } from 'redux';
 import { Socket } from 'socket.io'
+import { ExtendedSocket } from '../app';
 // import { Item } from 'rpg-shared/objects';
 
 const dialogMock = {
@@ -41,7 +42,7 @@ const shopMock = {
 }
 
 
-export default async (io: any, socket: Socket, character: any) => {
+export default async (io: any, socket: ExtendedSocket, character: any) => {
 
   socket.on(NPC_DIALOG_REQUEST, (action: Actions.NpcDialogRequest, dispatch: Dispatch) => {    
     dispatch({
@@ -67,13 +68,23 @@ export default async (io: any, socket: Socket, character: any) => {
     dispatch: Dispatch<Actions.$NpcShopResponse>
   ) => {
 
+    socket.emit(SYSTEM_ERROR, <Actions.SystemError> {
+      type: SYSTEM_ERROR,
+    });
+
+    socket.emit('LOAD_LOCATION', {
+      type: '$_LOAD_GAME'
+    });
+    
     socket.broadcast.emit(SYSTEM_ERROR, {
       type: SYSTEM_ERROR,
-      payload: 4,
-      error: {
-        fatal: false
-      }
-    } as Actions.$SystemError);
+      payload: 10,
+      meta: {
+        noobek: true,
+        io: 'rack'
+      },
+      error: {}
+    } as Actions.SystemError);
 
     dispatch({
       type: $_NPC_SHOP_RESPONSE,
