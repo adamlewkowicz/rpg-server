@@ -1,11 +1,11 @@
-import { Character } from '../../models/Character';
-import { Location } from '../../models/Location';
-import { CharacterLocation } from '../../models/CharacterLocation';
-import { ItemLoot as Item, ItemLocation } from '../../models/Item';
+import { Character } from '../models/Character';
+import { Location } from '../models/Location';
+import { CharacterLocation } from '../models/CharacterLocation';
+import { ItemLoot as Item, ItemLocation } from '../models/Item';
 import { Op } from 'sequelize';
 
-import battleController from '../battle';
-import npcController from '../npc';
+import battleController from './battle';
+import npcController from './npc';
 
 let characterId = 1;
 let onlinePlayers = 0;
