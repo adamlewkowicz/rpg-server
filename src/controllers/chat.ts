@@ -7,7 +7,7 @@ import { SYSTEM_ERROR } from "rpg-shared/lib/consts";
 export default (
   io: SocketIO.Socket,
   socket: ExtendedSocket,
-  { socketIds, currentLocationRoom }: any
+  { socketIds, currentLocationRoom }: ChatControllerProps
 ) => {
 
   socket.on(MESSAGE_SEND, async (
@@ -55,4 +55,9 @@ export default (
         });
     }
   });
+}
+
+interface ChatControllerProps {
+  currentLocationRoom: string
+  socketIds: Map<number, any>
 }
