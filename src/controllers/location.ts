@@ -1,6 +1,6 @@
 import { Character } from "../models/Character";
-import { ItemDrop, $ItemDroppedAdd, ItemPickup, $ItemDroppedRemove } from "rpg-shared/lib/action-types";
-import { $_ITEM_DROPPED_ADD, ITEM_DROP, ITEM_PICKUP } from "rpg-shared/lib/consts";
+import { ItemDrop, $ItemDroppedAdd, ItemPickup, $ItemDroppedRemove, $CharacterUpdate, CharacterUpdate } from "rpg-shared/lib/action-types";
+import { $_ITEM_DROPPED_ADD, ITEM_DROP, ITEM_PICKUP, CHARACTER_UPDATE, $_CHARACTER_UPDATE } from "rpg-shared/lib/consts";
 import { ExtendedSocket } from '../app';
 import { Item } from "rpg-shared/lib/objects";
 import { $_ITEM_DROPPED_REMOVE } from "rpg-shared/dist/consts";
@@ -18,7 +18,7 @@ const itemMock: Item = {
 export default (
   io: SocketIO.Client,
   socket: ExtendedSocket,
-  { currentLocationRoom }: LocationControllerProps
+  { currentLocationRoom, character }: LocationControllerProps
 ): void => {
 
   socket.on(ITEM_DROP, async (action: ItemDrop) => {
@@ -40,8 +40,19 @@ export default (
       });
   });
 
+
+  socket.on(CHARACTER_UPDATE, async (action: CharacterUpdate) => {
+    socket.broadcast
+      .emit($_CHARACTER_UPDATE, <$CharacterUpdate> {
+        type: $_CHARACTER_UPDATE,
+        payload: action.payload,
+        meta: { charId: character.id },
+      });
+  });
+
 }
 
 interface LocationControllerProps {
   currentLocationRoom: string
+  character: Character
 }

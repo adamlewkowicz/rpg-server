@@ -154,19 +154,9 @@ export default (io: any) => async (socket: any) => {
   });
 
 
-  socket.on('CHARACTER_UPDATE', async (action: any) => {
-    /* Third arg for stopping io propagation - equivalent for io: false */
-    socket.broadcast.emit('$_CHARACTER_UPDATE', {
-      ...action,
-      type: '$_CHARACTER_UPDATE',
-      meta: { ...action.meta, charId },
-    });
-  });
-
-  
   battleController(io, socket, character);
   npcController(io, socket, character);
-  locationController(io, socket, { currentLocationRoom });
+  locationController(io, socket, { currentLocationRoom, character });
   chatController(io, socket, { socketIds, currentLocationRoom });
 
   console.log(socketIds);
