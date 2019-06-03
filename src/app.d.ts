@@ -13,5 +13,7 @@ export interface ExtendedSocket extends NodeJS.EventEmitter {
   emit(event: ActionType, action: ExtendedAction): boolean
   to(roomName: string): ExtendedSocket
   on(event: ActionType, callback: (action: any, dispatch: Dispatch) => void): any;
+  leave: Socket['leave']
+  join: Socket['join']
   // on(event: ActionType, callback: (action: Action, store: any, dispatch: Dispatch) => void): any;
 }
