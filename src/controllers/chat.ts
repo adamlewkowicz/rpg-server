@@ -5,7 +5,7 @@ import { Dispatch } from "redux";
 import { SYSTEM_ERROR } from "rpg-shared/lib/consts";
 
 export default (
-  io: SocketIO.Socket,
+  io: SocketIO.Server,
   socket: ExtendedSocket,
   { socketIds, currentLocationRoom }: ChatControllerProps
 ) => {

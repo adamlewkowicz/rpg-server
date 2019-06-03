@@ -1,4 +1,5 @@
 import uniqid from 'uniqid';
+import { ExtendedSocket } from '../app';
 
 /* Scaffold battle engine */
 class Battle {
@@ -24,7 +25,12 @@ const battle = new Battle({});
 let charHP = 400;
 let mobHP = 100;
 
-export default (io: any, socket: any, character: any) => {
+export default (
+  io: SocketIO.Server,
+  socket: ExtendedSocket,
+  character: any
+) => {
+  
   const battles: any = {};
 
   socket.on('FIGHT_START', (action: any) => {

@@ -17,7 +17,7 @@ const itemMock: Item = {
 }
 
 export default (
-  io: SocketIO.Client,
+  io: SocketIO.Server,
   socket: ExtendedSocket,
   { currentLocationRoom, character }: LocationControllerProps
 ): void => {

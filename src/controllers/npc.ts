@@ -42,7 +42,11 @@ const shopMock = {
 }
 
 
-export default async (io: any, socket: ExtendedSocket, character: any) => {
+export default async (
+  io: SocketIO.Server,
+  socket: ExtendedSocket,
+  character: any
+) => {
 
   socket.on(NPC_DIALOG_REQUEST, (action: Actions.NpcDialogRequest, dispatch: Dispatch) => {    
     dispatch({
