@@ -1,11 +1,7 @@
-import { Character } from '../models/Character';
-import { Location } from '../models/Location';
-import { CharacterLocation } from '../models/CharacterLocation';
-import { ItemLocation } from '../models/Item';
 import { $_LOAD_GAME } from 'rpg-shared/dist/consts';
 import { $LoadGame } from 'rpg-shared/lib/action-types';
 import { ExtendedSocket } from '../app';
-import { getCharsForLocationId } from '../helpers';
+import { getCharsForLocationId, initGame } from '../helpers';
 
 import battleController from './battle';
 import npcController from './npc';
@@ -15,26 +11,10 @@ import chatController from './chat';
 const socketIds = new Map();
 let clientId = 0;
 
-async function initGame() {
-  console.log({ clientId });
-
-  const character = await Character.findByPk(clientId);
-  const position = await CharacterLocation.findOne({
-    where: { charId: clientId },
-    order: [['id', 'DESC']]
-  });
-  const [inventory] = await Promise.all([
-    ItemLocation.getInventory(clientId)
-  ]);
-  const currentMap = await Location.findByPk(1);
-
-  return { character, position, currentMap, inventory };
-}
-
 
 export default (io: SocketIO.Server) => async (socket: ExtendedSocket) => {
   clientId++;
-  const { character, position, currentMap, inventory } = await initGame();
+  const { character, position, currentMap, inventory } = await initGame(clientId);
 
   if (!currentMap || !character || !position) {
     throw new Error('Server error');
