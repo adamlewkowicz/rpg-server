@@ -3,9 +3,12 @@ import { Location } from '../models/Location';
 import { CharacterLocation } from '../models/CharacterLocation';
 import { ItemLoot as Item, ItemLocation } from '../models/Item';
 import { Op } from 'sequelize';
+import { $ItemDroppedAdd } from 'rpg-shared/lib/action-types'
 
 import battleController from './battle';
 import npcController from './npc';
+import locationController from './location';
+import { $_ITEM_DROPPED_ADD } from 'rpg-shared/lib/consts';
 
 let characterId = 1;
 let onlinePlayers = 0;
@@ -237,34 +240,9 @@ export default (io: any) => async (socket: any) => {
     }
   });
 
-  
-
-  /* Items */
-
-  socket.on('ITEM_DROP', async (action: any) => {
-    const $_ITEM_DROPPED_ADD = '$_ITEM_DROPPED_ADD';
-
-    socket
-      .to(currentLocationRoom)
-      .emit($_ITEM_DROPPED_ADD, {
-        ...action,
-        type: $_ITEM_DROPPED_ADD,
-      });
-  });
-
-  socket.on('ITEM_PICKUP', async (action: any) => {
-    const $_ITEM_DROPPED_REMOVE = '$_ITEM_DROPPED_REMOVE';
-
-    socket
-      .to(currentLocationRoom)
-      .emit($_ITEM_DROPPED_REMOVE, {
-        ...action,
-        type: $_ITEM_DROPPED_REMOVE
-      });
-  });
-
   battleController(io, socket, character);
   npcController(io, socket, character);
+  locationController(io, socket, { currentLocationRoom });
 
   console.log(socketIds);
 

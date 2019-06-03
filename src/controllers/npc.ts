@@ -3,7 +3,7 @@ import {
   NPC_SHOP_REQUEST, $_NPC_SHOP_RESPONSE,
   NPC_SHOP_TRADE, $_NPC_SHOP_TRADE, SYSTEM_ERROR
 } from 'rpg-shared/dist/consts';
-import * as Actions from 'rpg-shared/action-types/index';
+import * as Actions from 'rpg-shared/dist/action-types/index';
 import { Dispatch } from 'redux';
 import { Socket } from 'socket.io'
 import { ExtendedSocket } from '../app';
