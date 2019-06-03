@@ -7,6 +7,7 @@ import { Op } from 'sequelize';
 import battleController from './battle';
 import npcController from './npc';
 import locationController from './location';
+import chatController from './chat';
 
 let clientId = 0;
 
@@ -163,63 +164,10 @@ export default (io: any) => async (socket: any) => {
   });
 
   
-  /* Community */
-  const MESSAGE_TYPES = {
-    PRIVATE: 'PRIVATE',
-    GROUP: 'GROUP',
-    CLAN: 'CLAN',
-    LOCAL: 'LOCAL',
-    GLOBAL: 'GLOBAL'
-  }
-
-  socket.on('SEND_MESSAGE', async (action: any) => {
-    const { PRIVATE, GROUP, LOCAL } = MESSAGE_TYPES;
-
-    const nextAction = {
-      ...action,
-      type: 'RECEIVE_MESSAGE',
-      payload: {
-        ...action.payload,
-        fromSocketId: socketId,
-        fromCharId: charId
-      }
-    }
-
-
-    switch(action.payload.type) {
-
-      case PRIVATE:
-        const receiverSocketId = socketIds.get(Number(action.payload.to));
-
-        if (!receiverSocketId) {
-          throw new Error(`Socket with id ${receiverSocketId} doesn't exists`);
-        }
-
-        io
-          .to(receiverSocketId)
-          .emit('RECEIVE_MESSAGE', nextAction);
-        break;
-
-      case GROUP:
-        const groupRoom = `group_${action.payload.to}`;
-        socket
-          .to(groupRoom)
-          .emit('RECEIVE_MESSAGE', nextAction);
-        break;
-
-      case LOCAL:
-        socket
-          .to(currentLocationRoom)
-          .emit('RECEIVE_MESSAGE', nextAction);
-        break;
-
-      default: throw new Error(`Invalid message type ${action.payload.type}`);
-    }
-  });
-
   battleController(io, socket, character);
   npcController(io, socket, character);
   locationController(io, socket, { currentLocationRoom });
+  chatController(io, socket, { socketIds, currentLocationRoom });
 
   console.log(socketIds);
 
