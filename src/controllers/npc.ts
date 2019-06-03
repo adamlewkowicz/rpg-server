@@ -7,39 +7,7 @@ import * as Actions from 'rpg-shared/dist/action-types/index';
 import { Dispatch } from 'redux';
 import { Socket } from 'socket.io'
 import { ExtendedSocket } from '../app';
-// import { Item } from 'rpg-shared/objects';
-
-const dialogMock = {
-  id: 1,
-  npcId: 1,
-  steps: [
-    {
-      id: 1,
-      text: 'Have you seen my golden brancelet?',
-      options: [
-        { id: 1, text: 'Where have you seen it last time?' },
-        { id: 2, text: 'I will try to find it for you.' }
-      ],
-      closeText: 'Sorry, I have no time.'
-    }
-  ]
-}
-
-const shopMock = {
-  items: [
-    {
-      id: 1,
-      type: {
-        id: 1,
-        name: 'Sword',
-        img: ''
-      },
-      price: 314,
-      lvl: 12,
-      damage: 41
-    }
-  ]
-}
+import * as mocks from '../mocks';
 
 
 export default async (
@@ -51,7 +19,7 @@ export default async (
   socket.on(NPC_DIALOG_REQUEST, (action: Actions.NpcDialogRequest, dispatch: Dispatch) => {    
     dispatch({
       type: $_NPC_DIALOG_RESPONSE,
-      payload: dialogMock
+      payload: mocks.dialog
     });
   });
 
@@ -73,7 +41,7 @@ export default async (
   ) => {
     dispatch({
       type: $_NPC_SHOP_RESPONSE,
-      payload: shopMock
+      payload: mocks.shop
     });
   });
 }

@@ -5,16 +5,8 @@ import { Item, Character } from "rpg-shared/lib/objects";
 import { $_ITEM_DROPPED_REMOVE, CHARACTER_LEAVE } from "rpg-shared/dist/consts";
 import { Dispatch } from "redux";
 import { getDataForNextLocation } from '../helpers';
+import * as mocks from '../mocks';
 
-const itemMock: Item = {
-  id: 1,
-  type: {
-    id: 1,
-    name: 'sword',
-    img: ''
-  },
-  damage: 31
-}
 
 export default (
   io: SocketIO.Server,
@@ -28,7 +20,7 @@ export default (
       .to(currentLocationRoom)
       .emit($_ITEM_DROPPED_ADD, <$ItemDroppedAdd> {
         type: $_ITEM_DROPPED_ADD,
-        payload: itemMock
+        payload: mocks.item
       });
   });
   

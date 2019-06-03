@@ -7,6 +7,7 @@ import battleController from './battle';
 import npcController from './npc';
 import locationController from './location';
 import chatController from './chat';
+import * as mocks from '../mocks';
 
 const socketIds = new Map();
 let clientId = 0;
@@ -17,7 +18,7 @@ export default (io: SocketIO.Server) => async (socket: ExtendedSocket) => {
   const { character, position, currentMap, inventory } = await initGame(clientId);
 
   if (!currentMap || !character || !position) {
-    throw new Error('Server error');
+    throw new Error('Initial server error');
   }
 
   let currentLocationId: number = currentMap.id;
@@ -38,36 +39,7 @@ export default (io: SocketIO.Server) => async (socket: ExtendedSocket) => {
         character: char,
         characters,
         inventory,
-        collisions: [
-          [0, 1, 1, 1, 0, 1, 0],
-          [1, 0, 0, 0, 1, 1, 1],
-          [1, 1, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0],
-          [1, 1, 0, 0, 0, 0, 0],
-          [1, 0, 0, 0, 0, 0, 0]
-        ],
-        mobs: [{
-          id: 1,
-          lvl: 12,
-          status: 'IDLE',
-          x: 3,
-          y: 5,
-          type: {
-            id: 1,
-            name: 'Eagle',
-            category: 'common',
-            img: ''
-          }
-        }],
-        npcs: [{
-          id: 1,
-          name: 'Anubis',
-          x: 2,
-          y: 6,
-          lvl: 4,
-          img: ''
-        }],
-        inventorySize: 30
+        ...mocks.initialGame
       },
       meta: { io: false, clientId, currentLocationRoom, socketId }
     });
