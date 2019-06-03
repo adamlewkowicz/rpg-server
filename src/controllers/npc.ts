@@ -67,25 +67,6 @@ export default async (io: any, socket: ExtendedSocket, character: any) => {
     action: Actions.NpcShopRequest,
     dispatch: Dispatch<Actions.$NpcShopResponse>
   ) => {
-
-    socket.emit(SYSTEM_ERROR, <Actions.SystemError> {
-      type: SYSTEM_ERROR,
-    });
-
-    socket.emit('LOAD_LOCATION', {
-      type: '$_LOAD_GAME'
-    });
-    
-    socket.broadcast.emit(SYSTEM_ERROR, {
-      type: SYSTEM_ERROR,
-      payload: 10,
-      meta: {
-        noobek: true,
-        io: 'rack'
-      },
-      error: {}
-    } as Actions.SystemError);
-
     dispatch({
       type: $_NPC_SHOP_RESPONSE,
       payload: shopMock
