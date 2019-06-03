@@ -1,11 +1,14 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+import express from 'express';
+import * as http from 'http';
 import { sequelize } from './src/db';
 import { Character } from './src/models/Character';
 import { Location } from './src/models/Location';
 import { ItemLoot, ItemLocation, ItemType } from './src/models/Item';
 import mainController from './src/controllers/main';
+
+const app = express();
+const server = new http.Server(app);
+const io = require('socket.io')(http);
 
 app.get('/', function(req: any, res: any){
   res.sendFile(__dirname + '/index.html');
@@ -39,21 +42,11 @@ sequelize.sync({ force })
         ItemLocation.create({ charId: 2, lootId: 2, position: 1 })
       ]);
     }
-    return Promise.resolve;
   })
   .then(() => console.log('synced'))
   .catch(console.log)
 
 io.on('connection', mainController(io));
 
-/*
-const server1 = io
-  .of('/server1')
-  .on('connection', (socket: any) => gameController(server1, socket));
-*/
-
-
-http.listen(5000, function() {
-  console.log('listening on *:3000');
-});
+server.listen(5000);
 
