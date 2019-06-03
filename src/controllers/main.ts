@@ -3,33 +3,12 @@ import { Location } from '../models/Location';
 import { CharacterLocation } from '../models/CharacterLocation';
 import { ItemLoot as Item, ItemLocation } from '../models/Item';
 import { Op } from 'sequelize';
-import { $ItemDroppedAdd } from 'rpg-shared/lib/action-types'
 
 import battleController from './battle';
 import npcController from './npc';
 import locationController from './location';
-import { $_ITEM_DROPPED_ADD } from 'rpg-shared/lib/consts';
 
-let characterId = 1;
-let onlinePlayers = 0;
 let clientId = 0;
-
-const Ithan: any = {
-  players: []
-}
-
-const Torneg: any = {
-  players: []
-}
-
-const maps: any = {
-  Ithan: {
-    players: []
-  },
-  Torneg: {
-    players: []
-  }
-}
 
 const socketIds = new Map();
 
@@ -45,8 +24,6 @@ async function initGame() {
     ItemLocation.getInventory(clientId)
   ]);
   const currentMap = await Location.findByPk(1);
-  characterId++;
-  onlinePlayers++;
 
   return { character, position, currentMap, inventory };
 }
@@ -247,8 +224,6 @@ export default (io: any) => async (socket: any) => {
   console.log(socketIds);
 
   socket.on('disconnect', () => {
-    onlinePlayers--;
-    characterId--;
     clientId--;
     socketIds.delete(charId);
   });
