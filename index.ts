@@ -8,10 +8,6 @@ const app = express();
 const server = new http.Server(app);
 const io = require('socket.io')(http);
 
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-});
-
 let force = false;
 // force = true;
 sequelize.sync({ force })
