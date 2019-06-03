@@ -8,6 +8,8 @@ import battleController from './battle';
 import npcController from './npc';
 import locationController from './location';
 import chatController from './chat';
+import { $_LOAD_GAME } from 'rpg-shared/dist/consts';
+import { $LoadGame } from 'rpg-shared/lib/action-types';
 
 let clientId = 0;
 
@@ -81,8 +83,8 @@ export default (io: any) => async (socket: any) => {
   socketIds.set(charId, socketId);
 
   setTimeout(() => {
-    socket.emit('$_LOAD_GAME', {
-      type: '$_LOAD_GAME',
+    socket.emit($_LOAD_GAME, {
+      type: $_LOAD_GAME,
       payload: {
         location,
         character: char,
@@ -98,20 +100,26 @@ export default (io: any) => async (socket: any) => {
         ],
         mobs: [{
           id: 1,
-          name: 'Eagle',
-          level: 12,
+          lvl: 12,
           status: 'IDLE',
           x: 3,
           y: 5,
-          type: { id: 1, damage: 12 }
+          type: {
+            id: 1,
+            name: 'Eagle',
+            category: 'common',
+            img: ''
+          }
         }],
         npcs: [{
           id: 1,
           name: 'Anubis',
           x: 2,
           y: 6,
-          img: null
-        }]
+          lvl: 4,
+          img: ''
+        }],
+        inventorySize: 30
       },
       meta: { io: false, clientId, currentLocationRoom, socketId }
     });
