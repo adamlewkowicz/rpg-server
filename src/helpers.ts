@@ -4,7 +4,7 @@ import { Character } from './models/Character';
 import * as Objects from 'rpg-shared/lib/objects';
 
 
-async function getCharsForLocationId (locationId: number, charId: number) {
+export async function getCharsForLocationId (locationId: number, charId: number) {
   const sameLocationChars = await CharacterLocation
   .findAll({
     where: { locationId },

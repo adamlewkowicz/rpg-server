@@ -1,19 +1,19 @@
 import { Character } from '../models/Character';
 import { Location } from '../models/Location';
 import { CharacterLocation } from '../models/CharacterLocation';
-import { ItemLoot as Item, ItemLocation } from '../models/Item';
-import { Op } from 'sequelize';
+import { ItemLocation } from '../models/Item';
+import { $_LOAD_GAME } from 'rpg-shared/dist/consts';
+import { $LoadGame } from 'rpg-shared/lib/action-types';
+import { ExtendedSocket } from '../app';
+import { getCharsForLocationId } from '../helpers';
 
 import battleController from './battle';
 import npcController from './npc';
 import locationController from './location';
 import chatController from './chat';
-import { $_LOAD_GAME } from 'rpg-shared/dist/consts';
-import { $LoadGame } from 'rpg-shared/lib/action-types';
-
-let clientId = 0;
 
 const socketIds = new Map();
+let clientId = 0;
 
 async function initGame() {
   console.log({ clientId });
@@ -31,49 +31,17 @@ async function initGame() {
   return { character, position, currentMap, inventory };
 }
 
-async function getCharsForLocationId (locationId: number, charId: number) {
-  const sameLocationChars = await CharacterLocation
-  .findAll({
-    where: { locationId },
-    include: [
-      { model: Character }
-    ]
-  });
 
-  const normalizedChars = sameLocationChars
-    .map(char => {
-      const { character, ...rest } = char.toJSON();
-      return { ...character, ...rest };
-    })
-    .filter(char => char.id != charId);
-
-  return normalizedChars;
-}
-
-async function getDataForNextLocation(nextLocationId: number, charId: number) {
-
-  const [nextLocation, characters] = await Promise.all([
-    Location.findByPk(nextLocationId),
-    getCharsForLocationId(nextLocationId, charId)
-  ]);
-
-  if (!nextLocation || !characters) {
-    throw new Error(`Location probably doesnt exists - 404 - REQUEST_LOCATION_CHANGE`);
-  }
-
-  return { nextLocation, characters }
-}
-
-export default (io: any) => async (socket: any) => {
+export default (io: SocketIO.Server) => async (socket: ExtendedSocket) => {
   clientId++;
   const { character, position, currentMap, inventory } = await initGame();
 
   if (!currentMap || !character || !position) {
     throw new Error('Server error');
   }
+
   let currentLocationId: number = currentMap.id;
   let currentLocationRoom: string = `location_${currentLocationId}`;
-  let currentMapName = currentMap.name;
   const location = currentMap;
   const char = { ...character.toJSON(), ...position.toJSON() };
   const charId: number = char.id;
@@ -125,42 +93,6 @@ export default (io: any) => async (socket: any) => {
     });
     socket.join(currentLocationRoom);
   }, 500);
-
-
-
-  socket.on('REQUEST_LOCATION_CHANGE', async (action: any) => {
-    const nextLocationId = action.payload;
-    const nextLocationRoom = `location_${nextLocationId}`;
-
-    socket.broadcast
-      .to(currentLocationRoom)
-      .emit(
-        'CHARACTER_LEAVE',
-        { type: 'CHARACTER_LEAVE', payload: charId },
-        false
-      );
-    socket.leave(currentLocationRoom);
-
-    const { nextLocation, characters } = await getDataForNextLocation(nextLocationId, charId);
-
-    socket.join(nextLocationRoom);
-    socket.broadcast
-      .to(nextLocationRoom)
-      .emit(
-        'CHARACTER_JOIN',
-        { type: 'CHARACTER_JOIN', payload: char /* UNSAFE!! - get character from server's redux to make sure its position is correct */ },
-        false
-      );
-
-    socket.emit('CHANGE_LOCATION', {
-      type: 'CHANGE_LOCATION',
-      payload: { location: nextLocation, characters }
-    }, false);
-
-    currentLocationId = nextLocation.id;
-    currentLocationRoom = nextLocationRoom;
-  });
-
 
   battleController(io, socket, character);
   npcController(io, socket, character);
