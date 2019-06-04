@@ -1,4 +1,4 @@
-import { Item } from "rpg-shared/dist/objects";
+import { Item, FightAction } from "rpg-shared/lib/objects";
 
 export const initialGame = {
   collisions: [
@@ -61,4 +61,17 @@ export const dialog = {
       closeText: 'Sorry, I have no time.'
     }
   ]
+}
+
+export const fightAction: FightAction = {     
+  id: 1,
+  targetId: 1,
+  targetType: 'CHARACTER',
+  type: 'BASIC_ATTACK',
+  changes: {
+    hp: -50
+  },
+  result: {
+    hp: 134
+  }
 }

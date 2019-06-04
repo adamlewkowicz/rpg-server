@@ -1,5 +1,7 @@
 import uniqid from 'uniqid';
 import { ExtendedSocket } from '../app';
+import * as Actions from 'rpg-shared/lib/action-types'
+import { FIGHT_START } from 'rpg-shared/lib/consts';
 
 let charHP = 400;
 let mobHP = 100;
@@ -10,10 +12,10 @@ export default (
   character: any
 ) => {
   
-  const battles: any = {};
+  const battles: Battles = {};
 
-  socket.on('FIGHT_START', (action: any) => {
-    const { payload: mobId } = action;
+  socket.on(FIGHT_START, (action: Actions.FightStart) => {
+    const { targetId } = action.payload;
     const battleId = uniqid();
     const battleRoom = `battle__${battleId}`;
     battles[battleId] = { actions: [] };
@@ -30,7 +32,7 @@ export default (
       const nextTwoActions = [
         {
           target: 'MOB',
-          targetId: mobId,
+          targetId,
           result: { hp: mobHP }
         },
         {
@@ -54,7 +56,8 @@ export default (
         return;
       }
 
-      io.emit('$_FIGHT_ACTION_RESULT', {
+      io.in(battleRoom)
+        .emit('$_FIGHT_ACTION_RESULT', {
           type: '$_FIGHT_ACTION_RESULT',
           payload: nextTwoActions
         });
@@ -69,7 +72,7 @@ interface BattleAction {
 }
 
 interface Battle {
-  actions: BattleAction[]
+  actions: any[]
 }
 
 interface Battles {
