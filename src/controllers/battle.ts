@@ -1,27 +1,6 @@
 import uniqid from 'uniqid';
 import { ExtendedSocket } from '../app';
 
-/* Scaffold battle engine */
-class Battle {
-  charHP: number;
-  mobHP: number;
-  
-  constructor({ charHP, mobHP }: any) {
-    this.charHP = 400;
-    this.mobHP = 100;
-  }
-
-  characterAttacksMob() {
-    return this.mobHP - 35;
-  }
-
-  mobAttacksCharacter() {
-    const x = this.charHP - 50;
-    return x;
-  }
-}
-
-const battle = new Battle({});
 let charHP = 400;
 let mobHP = 100;
 
@@ -42,13 +21,10 @@ export default (
 
     socket.join(battleRoom);
 
-    /* Scaffold battle state */
-    
+    /* Scaffold battle state - WIP */
 
     socket.on('FIGHT_ACTION', (action: any) => {
       /* Basic attack */
-      // const mobHP = battle.characterAttacksMob();
-      // const charHP = battle.mobAttacksCharacter();
       charHP -= 50;
       mobHP -= 35;
 
@@ -71,8 +47,7 @@ export default (
       ]
 
       if (mobHP <= 0 || charHP <= 0) {
-        io
-          .in(battleRoom)
+        io.in(battleRoom)
           .emit('$_FIGHT_FINISH', {
             type: '$_FIGHT_FINISH',
             payload: nextTwoActions
@@ -80,8 +55,7 @@ export default (
         return;
       }
 
-      io
-        .emit('$_FIGHT_ACTION_RESULT', {
+      io.emit('$_FIGHT_ACTION_RESULT', {
           type: '$_FIGHT_ACTION_RESULT',
           payload: nextTwoActions
         });
