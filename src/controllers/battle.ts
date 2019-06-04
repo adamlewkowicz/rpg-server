@@ -13,7 +13,6 @@ export default (
   const battles: any = {};
 
   socket.on('FIGHT_START', (action: any) => {
-    console.log({ action }, 'F')
     const { payload: mobId } = action;
     const battleId = uniqid();
     const battleRoom = `battle__${battleId}`;
@@ -61,4 +60,18 @@ export default (
         });
     });
   });
+}
+
+interface BattleAction {
+  targetType: 'MOB' | 'CHARACTER'
+  targetId: number
+
+}
+
+interface Battle {
+  actions: BattleAction[]
+}
+
+interface Battles {
+  [battleId: string]: Battle
 }
